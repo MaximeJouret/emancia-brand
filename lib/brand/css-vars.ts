@@ -1,11 +1,12 @@
 import { brand } from './defaults'
+import type { ColorToken } from './types'
 
 export function generateCSSVars(): string {
   const vars: string[] = []
 
   // Colors
   for (const [group, tokens] of Object.entries(brand.colors)) {
-    for (const [key, token] of Object.entries(tokens)) {
+    for (const [key, token] of Object.entries(tokens as Record<string, ColorToken>)) {
       vars.push(`  --color-${group}-${key}: ${token.hex};`)
     }
   }

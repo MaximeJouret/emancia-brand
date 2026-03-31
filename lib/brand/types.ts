@@ -38,11 +38,20 @@ export interface LogoVersion {
   usage: string[]
 }
 
+export interface NamedPalette {
+  id: string
+  name: string
+  subtitle: string
+  description: string
+  colors: Omit<ColorPalette, 'functional'>
+}
+
 export interface BrandKit {
   name: string
   fullName: string
   tagline: string
   colors: ColorPalette
+  palettes: NamedPalette[]
   typography: TypographySystem
   spacing: SpacingSystem
   logos: LogoVersion[]

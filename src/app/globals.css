@@ -20,10 +20,10 @@
   --color-info: #5BBAB5;
 
   /* Dark mode */
-  --color-dark-bg: #0D1B1A;
-  --color-dark-surface: #142625;
-  --color-dark-teal: #22B5AE;
-  --color-dark-text: #E8F0EF;
+  --color-dark-bg: #121212;
+  --color-dark-surface: #1E1E1E;
+  --color-dark-teal: #3DD4CC;
+  --color-dark-text: #E4E4E4;
 
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;

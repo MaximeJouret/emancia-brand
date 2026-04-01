@@ -74,22 +74,22 @@ export const brand: BrandKit = {
     },
     darkMode: {
       background: {
-        hex: '#0D1B1A',
+        hex: '#121212',
         name: 'Fond sombre',
         usage: 'Fond principal en mode sombre',
       },
       surface: {
-        hex: '#142625',
+        hex: '#1E1E1E',
         name: 'Surface sombre',
         usage: 'Cartes et conteneurs en mode sombre',
       },
       tealLight: {
-        hex: '#22B5AE',
-        name: 'Teal lumineux',
+        hex: '#3DD4CC',
+        name: 'Teal clair',
         usage: 'Couleur principale adaptée au mode sombre',
       },
       textPrimary: {
-        hex: '#E8F0EF',
+        hex: '#E4E4E4',
         name: 'Texte clair',
         usage: 'Texte principal en mode sombre',
       },
@@ -116,10 +116,10 @@ export const brand: BrandKit = {
           bleuNuit: { hex: '#1A2B3C', name: 'Bleu nuit', usage: 'Texte sur fond clair, titres sombres, footer' },
         },
         darkMode: {
-          background: { hex: '#0D1B1A', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
-          surface: { hex: '#142625', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
-          accent: { hex: '#22B5AE', name: 'Teal lumineux', usage: 'Couleur principale adaptée au mode sombre' },
-          textPrimary: { hex: '#E8F0EF', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
+          background: { hex: '#121212', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
+          surface: { hex: '#1E1E1E', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
+          accent: { hex: '#3DD4CC', name: 'Teal clair', usage: 'Couleur principale adaptée au mode sombre' },
+          textPrimary: { hex: '#E4E4E4', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
         },
       },
     },

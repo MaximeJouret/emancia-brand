@@ -5,11 +5,16 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
+type AuthMode = 'login' | 'signup'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState<AuthMode>('login')
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,6 +35,41 @@ export default function LoginPage() {
 
     router.push('/')
     router.refresh()
+  }
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.')
+      setLoading(false)
+      return
+    }
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: 'viewer',
+        },
+        emailRedirectTo: `${window.location.origin}/`,
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    setSuccess('Compte créé ! Vérifiez votre email pour confirmer votre inscription.')
+    setLoading(false)
   }
 
   return (
@@ -66,8 +106,31 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="bg-white/[0.07] backdrop-blur-xl rounded-2xl p-8 border border-white/10">
-          <div className="mb-5">
+        <form
+          onSubmit={mode === 'login' ? handleLogin : handleSignup}
+          className="bg-white/[0.07] backdrop-blur-xl rounded-2xl p-8 border border-white/10"
+        >
+          {/* Title */}
+          <p className="text-white/60 text-sm text-center mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            {mode === 'login' ? 'Connectez-vous à votre espace' : 'Créez votre compte'}
+          </p>
+
+          {mode === 'signup' && (
+            <div className="mb-4">
+              <label htmlFor="fullName" className="block text-sm font-medium text-white/80 mb-1.5">Nom complet</label>
+              <input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Prénom Nom"
+                required
+                className="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
+              />
+            </div>
+          )}
+
+          <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-1.5">Email</label>
             <input
               id="email"
@@ -81,7 +144,9 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-1.5">Mot de passe</label>
+            <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-1.5">
+              Mot de passe {mode === 'signup' && <span className="text-white/30 font-normal">(min. 6 caractères)</span>}
+            </label>
             <input
               id="password"
               type="password"
@@ -89,6 +154,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              minLength={mode === 'signup' ? 6 : undefined}
               className="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/10 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/20 transition-all"
             />
           </div>
@@ -99,17 +165,55 @@ export default function LoginPage() {
             </div>
           )}
 
+          {success && (
+            <div className="mb-4 p-3 rounded-lg bg-teal/20 text-sm border border-teal/20" style={{ color: '#88C9C7' }}>
+              {success}
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !!success}
             className="w-full py-2.5 rounded-lg bg-teal text-white text-sm font-medium hover:bg-teal-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Connexion...' : 'Se connecter'}
+            {loading
+              ? 'Chargement...'
+              : mode === 'login'
+                ? 'Se connecter'
+                : 'Créer mon compte'
+            }
           </button>
+
+          {/* Toggle mode */}
+          <div className="mt-5 text-center">
+            {mode === 'login' ? (
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                Pas encore de compte ?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setMode('signup'); setError(''); setSuccess('') }}
+                  className="text-teal-clair hover:text-white transition-colors underline underline-offset-2"
+                >
+                  Créer un compte
+                </button>
+              </p>
+            ) : (
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                Déjà un compte ?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setError(''); setSuccess('') }}
+                  className="text-teal-clair hover:text-white transition-colors underline underline-offset-2"
+                >
+                  Se connecter
+                </button>
+              </p>
+            )}
+          </div>
         </form>
 
-        <p className="text-center text-xs text-white/20 mt-6">
-          Accès réservé à l'équipe Emancia
+        <p className="text-center text-xs mt-6" style={{ color: 'rgba(255,255,255,0.15)' }}>
+          Accès réservé à l&apos;équipe Emancia
         </p>
       </div>
     </div>

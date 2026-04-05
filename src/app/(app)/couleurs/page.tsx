@@ -242,7 +242,7 @@ export default function CouleursPage() {
               usage: 'Illustrations, décorations',
             },
           ].map((v) => (
-            <div key={v.title} className="rounded-2xl overflow-hidden border border-gris-leger/30 group">
+            <div key={v.title} className="rounded-2xl overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.08)] group">
               {/* Color header block */}
               <div className="relative px-6 py-8 overflow-hidden" style={{ backgroundColor: v.color }}>
                 {/* Large letter watermark */}

@@ -236,7 +236,7 @@ export default function CouleursPage() {
               color: brand.colors.secondary.sauge.hex,
               colorName: 'Sauge',
               hex: '#A8C280',
-              lightText: false,
+              lightText: true,
               why: 'Croissance naturelle, sagesse et sincérité. L\'anti-marketing agressif : pas de flashy, juste du vrai.',
               meaning: 'Pas de fausses promesses. Une marque qui dit ce qu\'elle fait et fait ce qu\'elle dit.',
               usage: 'Illustrations, décorations',

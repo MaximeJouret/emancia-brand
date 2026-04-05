@@ -1,5 +1,6 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
+import Image from 'next/image'
 
 export default function LogoPage() {
   return (
@@ -54,10 +55,15 @@ export default function LogoPage() {
             de <strong>1x</strong> autour du logo — aucun élément graphique ou texte
             ne peut y figurer.
           </p>
-          <div className="bg-teal-clair/30 border-2 border-dashed border-teal/30 rounded-lg p-12 flex items-center justify-center">
-            <div className="bg-white border border-teal/20 rounded-lg px-12 py-6 text-center">
-              <p className="font-display text-2xl font-semibold text-teal">Emancia</p>
-              <p className="text-xs text-gris-texte/40 mt-2">↕ 1x de marge minimum</p>
+          <div className="bg-teal-clair/30 border-2 border-dashed border-teal/30 rounded-lg p-6 flex items-center justify-center relative">
+            {/* Margin indicators */}
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[10px] text-teal/60 font-mono">1x</div>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-teal/60 font-mono">1x</div>
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-teal/60 font-mono">1x</div>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-teal/60 font-mono">1x</div>
+
+            <div className="bg-white border border-teal/20 rounded-lg px-10 py-6 flex items-center justify-center">
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={200} height={50} className="h-12 w-auto" />
             </div>
           </div>
         </div>
@@ -86,17 +92,21 @@ export default function LogoPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-6">Déclinaisons chromatiques</h2>
         <div className="grid grid-cols-2 gap-6">
-          <div className="bg-blanc-naturel rounded-xl p-8 flex items-center justify-center border border-gris-leger">
-            <p className="font-display text-2xl font-semibold text-teal">Emancia</p>
+          <div className="bg-blanc-naturel rounded-xl p-8 flex flex-col items-center justify-center gap-3 border border-gris-leger min-h-[140px]">
+            <Image src="/logos/logo-main.svg" alt="Logo sur fond clair" width={180} height={45} className="h-10 w-auto" />
+            <p className="text-xs text-gris-texte/40">Fond clair</p>
           </div>
-          <div className="bg-bleu-nuit rounded-xl p-8 flex items-center justify-center">
-            <p className="font-display text-2xl font-semibold text-white">Emancia</p>
+          <div className="bg-bleu-nuit rounded-xl p-8 flex flex-col items-center justify-center gap-3 min-h-[140px]">
+            <Image src="/logos/logo-main.svg" alt="Logo sur fond sombre" width={180} height={45} className="h-10 w-auto brightness-0 invert" />
+            <p className="text-xs text-white/30">Fond sombre</p>
           </div>
-          <div className="bg-teal rounded-xl p-8 flex items-center justify-center">
-            <p className="font-display text-2xl font-semibold text-white">Emancia</p>
+          <div className="bg-teal rounded-xl p-8 flex flex-col items-center justify-center gap-3 min-h-[140px]">
+            <Image src="/logos/logo-main.svg" alt="Logo sur teal" width={180} height={45} className="h-10 w-auto brightness-0 invert" />
+            <p className="text-xs text-white/40">Sur teal</p>
           </div>
-          <div className="bg-prune rounded-xl p-8 flex items-center justify-center">
-            <p className="font-display text-2xl font-semibold text-white">Emancia</p>
+          <div className="bg-prune rounded-xl p-8 flex flex-col items-center justify-center gap-3 min-h-[140px]">
+            <Image src="/logos/logo-main.svg" alt="Logo sur prune" width={180} height={45} className="h-10 w-auto brightness-0 invert" />
+            <p className="text-xs text-white/40">Sur prune</p>
           </div>
         </div>
       </section>

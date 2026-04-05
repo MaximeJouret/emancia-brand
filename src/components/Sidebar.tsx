@@ -69,7 +69,7 @@ export function Sidebar() {
             <h1 className="font-display text-lg font-semibold text-white leading-tight">
               Emancia
             </h1>
-            <p className="text-[11px] text-white/50 leading-tight">Charte Graphique</p>
+            <p className="text-[11px] text-white/70 leading-tight">Charte Graphique</p>
           </div>
         </Link>
       </div>

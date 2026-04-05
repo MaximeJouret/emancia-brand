@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { User } from 'lucide-react'
+import { User, Lightbulb } from 'lucide-react'
 
 interface NavItem {
   href: string
@@ -29,7 +29,6 @@ const navSections: NavSection[] = [
     title: 'Communication',
     items: [
       { href: '/ton-editorial', label: 'Ton éditorial' },
-      { href: '/idees-contenus', label: 'Idées de contenus' },
     ],
   },
   {
@@ -71,6 +70,21 @@ export function Sidebar() {
             </h1>
             <p className="text-[11px] text-white/70 leading-tight">Charte Graphique</p>
           </div>
+        </Link>
+      </div>
+
+      {/* CTA Idées de contenus */}
+      <div className="px-4 pt-4">
+        <Link
+          href="/idees-contenus"
+          className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            pathname === '/idees-contenus'
+              ? 'bg-white text-teal shadow-sm'
+              : 'bg-white/15 text-white hover:bg-white/25 border border-white/10'
+          }`}
+        >
+          <Lightbulb size={16} />
+          Idées de contenus
         </Link>
       </div>
 

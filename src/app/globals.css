@@ -57,6 +57,14 @@ h1, h2, h3, h4 {
   color: var(--color-bleu-nuit);
 }
 
+/* Allow overriding heading color inside sidebar & login */
+.sidebar-scroll h1,
+.sidebar-scroll h2,
+.sidebar-scroll h3,
+.sidebar-scroll h4 {
+  color: inherit;
+}
+
 code, pre, .font-mono {
   font-family: var(--font-mono);
 }

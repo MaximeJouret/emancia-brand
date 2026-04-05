@@ -61,7 +61,11 @@ h1, h2, h3, h4 {
 .sidebar-scroll h1,
 .sidebar-scroll h2,
 .sidebar-scroll h3,
-.sidebar-scroll h4 {
+.sidebar-scroll h4,
+.dark-context h1,
+.dark-context h2,
+.dark-context h3,
+.dark-context h4 {
   color: inherit;
 }
 

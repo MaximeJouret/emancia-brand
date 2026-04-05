@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-bleu-nuit flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen w-full bg-bleu-nuit flex items-center justify-center relative overflow-hidden dark-context">
       {/* Background logo watermark */}
       <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none">
         <Image

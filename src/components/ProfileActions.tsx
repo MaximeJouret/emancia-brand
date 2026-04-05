@@ -6,9 +6,9 @@ import { LogOut } from 'lucide-react'
 
 export function ProfileActions() {
   const router = useRouter()
-  const supabase = createClient()
 
   const handleLogout = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push('/login')
     router.refresh()

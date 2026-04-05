@@ -29,6 +29,7 @@ const navSections: NavSection[] = [
     title: 'Communication',
     items: [
       { href: '/ton-editorial', label: 'Ton éditorial' },
+      { href: '/idees-contenus', label: 'Idées de contenus' },
     ],
   },
   {

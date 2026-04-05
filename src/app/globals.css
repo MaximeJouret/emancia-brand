@@ -3,28 +3,31 @@
 @theme {
   /* Primary */
   --color-teal: #1A8F8A;
-  --color-teal-dark: #106C68;
-  --color-blanc-naturel: #F2F5EE;
-  --color-prune: #7A4F6D;
+  --color-bleu-nuit: #1A2B3C;
+  --color-blanc-casse: #F2F5EE;
 
   /* Secondary */
-  --color-teal-clair: #5BBAB5;
-  --color-sauge: #A8C280;
+  --color-prune: #7A4F6D;
+  --color-teal-clair: #88C9C7;
   --color-gris-texte: #4A4A4A;
-  --color-gris-leger: #E8E8E8;
-  --color-bleu-nuit: #1A2B3C;
+  --color-sauge: #A8C280;
 
   /* Functional */
   --color-success: #4CAF82;
   --color-error: #E05252;
   --color-warning: #F0A500;
-  --color-info: #5BBAB5;
+  --color-info: #88C9C7;
 
   /* Dark mode */
   --color-dark-bg: #121212;
   --color-dark-surface: #1E1E1E;
   --color-dark-teal: #3DD4CC;
   --color-dark-text: #E4E4E4;
+
+  /* Legacy aliases (used by other pages) */
+  --color-teal-dark: #106C68;
+  --color-blanc-naturel: #F2F5EE;
+  --color-gris-leger: #E8E8E8;
 
   /* Typography */
   --font-display: 'Fraunces', Georgia, serif;
@@ -44,7 +47,7 @@
 body {
   font-family: var(--font-body);
   color: var(--color-gris-texte);
-  background-color: var(--color-blanc-naturel);
+  background-color: var(--color-blanc-casse);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -12,47 +12,37 @@ export const brand: BrandKit = {
         name: 'Teal Emancia',
         usage: 'Couleur principale — logo, titres, liens, éléments interactifs',
       },
-      tealDark: {
-        hex: '#106C68',
-        name: 'Teal foncé',
-        usage: 'Hover, états actifs, contrastes renforcés',
+      bleuNuit: {
+        hex: '#1A2B3C',
+        name: 'Bleu nuit',
+        usage: 'Texte sur fond clair, titres sombres, footer',
       },
-      blancNaturel: {
+      blancCasse: {
         hex: '#F2F5EE',
         name: 'Blanc cassé',
         usage: 'Fond principal, espaces de respiration',
       },
+    },
+    secondary: {
       prune: {
         hex: '#7A4F6D',
         name: 'Prune doux',
         usage: 'CTA, accents, éléments distinctifs',
       },
-    },
-    secondary: {
       tealClair: {
-        hex: '#5BBAB5',
+        hex: '#88C9C7',
         name: 'Teal clair',
         usage: 'Fonds de sections, badges, highlights, respiration visuelle',
-      },
-      sauge: {
-        hex: '#A8C280',
-        name: 'Sauge révisée',
-        usage: 'Illustrations, décorations, fonds secondaires (jamais pour du texte)',
       },
       grisTexte: {
         hex: '#4A4A4A',
         name: 'Gris texte',
         usage: 'Texte courant, paragraphes',
       },
-      grisLeger: {
-        hex: '#E8E8E8',
-        name: 'Gris léger',
-        usage: 'Bordures, séparateurs, fonds subtils',
-      },
-      bleuNuit: {
-        hex: '#1A2B3C',
-        name: 'Bleu nuit',
-        usage: 'Texte sur fond clair, titres sombres, footer',
+      sauge: {
+        hex: '#A8C280',
+        name: 'Sauge',
+        usage: 'Illustrations, décorations, fonds secondaires (jamais pour du texte)',
       },
     },
     functional: {
@@ -72,7 +62,7 @@ export const brand: BrandKit = {
         usage: 'Avertissements, attention requise',
       },
       info: {
-        hex: '#5BBAB5',
+        hex: '#88C9C7',
         name: 'Info',
         usage: 'Messages informatifs, tooltips',
       },
@@ -105,105 +95,25 @@ export const brand: BrandKit = {
     {
       id: 'A',
       name: 'Teal & Prune doux',
-      subtitle: 'Palette principale — Option 04',
-      description: 'Palette validée par l\'audit chromatique. Le teal incarne expertise et confiance, le prune doux apporte chaleur et émancipation, la sauge soutient douceur et ouverture.',
+      subtitle: 'Palette principale',
+      description: 'Palette validée par l\'audit chromatique. Le teal incarne expertise et confiance, le prune doux apporte chaleur et émancipation, la sauge soutient douceur et ouverture. Max 3 couleurs par composition.',
       colors: {
         primary: {
           teal: { hex: '#1A8F8A', name: 'Teal Emancia', usage: 'Couleur principale — logo, titres, liens, éléments interactifs' },
-          tealDark: { hex: '#106C68', name: 'Teal foncé', usage: 'Hover, états actifs, contrastes renforcés' },
+          bleuNuit: { hex: '#1A2B3C', name: 'Bleu nuit', usage: 'Texte sur fond clair, titres sombres, footer' },
           blancCasse: { hex: '#F2F5EE', name: 'Blanc cassé', usage: 'Fond principal, espaces de respiration' },
-          prune: { hex: '#7A4F6D', name: 'Prune doux', usage: 'CTA, accents, éléments distinctifs' },
         },
         secondary: {
-          tealClair: { hex: '#5BBAB5', name: 'Teal clair', usage: 'Fonds de sections, badges, highlights, respiration visuelle' },
-          sauge: { hex: '#A8C280', name: 'Sauge révisée', usage: 'Illustrations, décorations, fonds secondaires' },
+          prune: { hex: '#7A4F6D', name: 'Prune doux', usage: 'CTA, accents, éléments distinctifs' },
+          tealClair: { hex: '#88C9C7', name: 'Teal clair', usage: 'Fonds de sections, badges, highlights, respiration visuelle' },
           grisTexte: { hex: '#4A4A4A', name: 'Gris texte', usage: 'Texte courant, paragraphes' },
-          grisLeger: { hex: '#E8E8E8', name: 'Gris léger', usage: 'Bordures, séparateurs, fonds subtils' },
-          bleuNuit: { hex: '#1A2B3C', name: 'Bleu nuit', usage: 'Texte sur fond clair, titres sombres, footer' },
+          sauge: { hex: '#A8C280', name: 'Sauge', usage: 'Illustrations, décorations, fonds secondaires' },
         },
         darkMode: {
           background: { hex: '#121212', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
           surface: { hex: '#1E1E1E', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
           accent: { hex: '#3DD4CC', name: 'Teal clair', usage: 'Couleur principale adaptée au mode sombre' },
           textPrimary: { hex: '#E4E4E4', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
-        },
-      },
-    },
-    {
-      id: 'B',
-      name: 'Océan Profond',
-      subtitle: 'Indigo & Sauge',
-      description: 'La profondeur et la stabilité de l\'océan. L\'indigo évoque les institutions financières de confiance, adouci par le vert sauge.',
-      colors: {
-        primary: {
-          indigo: { hex: '#2D5A8E', name: 'Indigo', usage: 'Couleur principale — titres, liens, éléments interactifs' },
-          indigoFonce: { hex: '#1B3A5C', name: 'Indigo foncé', usage: 'Hover, états actifs, contrastes renforcés' },
-          blancCreme: { hex: '#F5F3EE', name: 'Blanc crème', usage: 'Fond principal, espaces de respiration' },
-          sauge: { hex: '#5A7A6B', name: 'Sauge', usage: 'CTA, accents, éléments distinctifs' },
-        },
-        secondary: {
-          indigoClair: { hex: '#E8EEF5', name: 'Indigo clair', usage: 'Fonds de sections, cartes, zones mises en avant' },
-          grisTexte: { hex: '#4A4A4A', name: 'Gris texte', usage: 'Texte courant, paragraphes' },
-          grisLeger: { hex: '#E8E8E8', name: 'Gris léger', usage: 'Bordures, séparateurs, fonds subtils' },
-          ardoise: { hex: '#2B3542', name: 'Ardoise', usage: 'Texte sur fond clair, titres sombres, footer' },
-        },
-        darkMode: {
-          background: { hex: '#0E1520', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
-          surface: { hex: '#162030', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
-          accent: { hex: '#4A8BD4', name: 'Indigo lumineux', usage: 'Couleur principale adaptée au mode sombre' },
-          textPrimary: { hex: '#E5EAF0', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
-        },
-      },
-    },
-    {
-      id: 'C',
-      name: 'Forêt & Pierre',
-      subtitle: 'Vert forêt & Terracotta',
-      description: 'La solidité de la pierre et la croissance naturelle. Le vert forêt symbolise la croissance organique, le terracotta apporte chaleur et authenticité.',
-      colors: {
-        primary: {
-          vertForet: { hex: '#2E6B50', name: 'Vert forêt', usage: 'Couleur principale — titres, liens, éléments interactifs' },
-          vertFonce: { hex: '#1D4A36', name: 'Vert foncé', usage: 'Hover, états actifs, contrastes renforcés' },
-          blancLin: { hex: '#F6F3EF', name: 'Blanc lin', usage: 'Fond principal, espaces de respiration' },
-          terracotta: { hex: '#8B5E4B', name: 'Terracotta doux', usage: 'CTA, accents, éléments distinctifs' },
-        },
-        secondary: {
-          vertClair: { hex: '#E5F0EA', name: 'Vert clair', usage: 'Fonds de sections, cartes, zones mises en avant' },
-          grisTexte: { hex: '#4A4A4A', name: 'Gris texte', usage: 'Texte courant, paragraphes' },
-          grisLeger: { hex: '#E8E8E8', name: 'Gris léger', usage: 'Bordures, séparateurs, fonds subtils' },
-          charbon: { hex: '#2A2F2E', name: 'Charbon', usage: 'Texte sur fond clair, titres sombres, footer' },
-        },
-        darkMode: {
-          background: { hex: '#0F1A15', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
-          surface: { hex: '#152820', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
-          accent: { hex: '#3FA87A', name: 'Vert lumineux', usage: 'Couleur principale adaptée au mode sombre' },
-          textPrimary: { hex: '#E3EDE8', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
-        },
-      },
-    },
-    {
-      id: 'D',
-      name: 'Crépuscule',
-      subtitle: 'Bleu nuit & Vieux rose',
-      description: 'Le moment entre jour et nuit, symbolisant la transformation vers l\'émancipation financière. Moderne, humain, anti-corporate.',
-      colors: {
-        primary: {
-          bleuNuitProfond: { hex: '#3B4D7A', name: 'Bleu nuit profond', usage: 'Couleur principale — titres, liens, éléments interactifs' },
-          encre: { hex: '#272F4A', name: 'Encre', usage: 'Hover, états actifs, contrastes renforcés' },
-          blancCendre: { hex: '#F3F2F0', name: 'Blanc cendré', usage: 'Fond principal, espaces de respiration' },
-          vieuxRose: { hex: '#9E6B7B', name: 'Vieux rose', usage: 'CTA, accents, éléments distinctifs' },
-        },
-        secondary: {
-          bleuNuitClair: { hex: '#E8EBF2', name: 'Bleu nuit clair', usage: 'Fonds de sections, cartes, zones mises en avant' },
-          grisTexte: { hex: '#4A4A4A', name: 'Gris texte', usage: 'Texte courant, paragraphes' },
-          grisLeger: { hex: '#E8E8E8', name: 'Gris léger', usage: 'Bordures, séparateurs, fonds subtils' },
-          graphite: { hex: '#2C2C34', name: 'Graphite', usage: 'Texte sur fond clair, titres sombres, footer' },
-        },
-        darkMode: {
-          background: { hex: '#12131C', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
-          surface: { hex: '#1C1E2A', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
-          accent: { hex: '#6B82C4', name: 'Bleu lumineux', usage: 'Couleur principale adaptée au mode sombre' },
-          textPrimary: { hex: '#E4E3EF', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
         },
       },
     },

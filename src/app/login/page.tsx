@@ -58,12 +58,12 @@ export default function LoginPage() {
           <Image
             src="/logos/logo-icon.svg"
             alt="Emancia"
-            width={56}
-            height={56}
-            className="mx-auto mb-5 brightness-0 invert"
+            width={80}
+            height={80}
+            className="mx-auto mb-5 brightness-0 invert w-20 h-20"
             priority
           />
-          <h1 className="font-display text-2xl font-semibold text-white mb-1">
+          <h1 className="font-display text-2xl font-semibold mb-1" style={{ color: '#ffffff' }}>
             Emancia
           </h1>
           <p className="text-sm text-white/40">Charte Graphique — Espace interne</p>

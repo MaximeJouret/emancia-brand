@@ -1,5 +1,6 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
+import { ColorSwatch } from '@/components/ColorSwatch'
 import type { ColorToken, NamedPalette } from '@/lib/brand'
 
 /** Generate tints (lighter) from a hex color */
@@ -81,20 +82,6 @@ function hexToRgb(hex: string): string {
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   return `${r} ; ${g} ; ${b}`
-}
-
-function ColorSwatch({ token }: { token: ColorToken }) {
-  return (
-    <div className="group">
-      <div
-        className="h-24 rounded-xl mb-3 border border-gris-leger/30 transition-transform group-hover:scale-105"
-        style={{ backgroundColor: token.hex }}
-      />
-      <p className="font-medium text-sm">{token.name}</p>
-      <p className="font-mono text-xs text-gris-texte/60 mt-0.5">{token.hex}</p>
-      <p className="text-xs text-gris-texte/80 mt-1">{token.usage}</p>
-    </div>
-  )
 }
 
 function ColorGroup({ title, tokens }: { title: string; tokens: Record<string, ColorToken> }) {

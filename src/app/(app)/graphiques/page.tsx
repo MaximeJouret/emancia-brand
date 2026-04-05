@@ -87,19 +87,57 @@ export default function GraphiquesPage() {
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Graphique en barres</h2>
         <div className="bg-white rounded-xl p-6 border border-gris-leger/30">
-          <p className="text-sm text-gris-texte/60 mb-6">Inscriptions mensuelles (2026)</p>
-          <div className="flex items-end gap-3 h-48">
+          <p className="text-sm text-gris-texte/60 mb-4">Inscriptions mensuelles (2026)</p>
+
+          {/* Y-axis + bars */}
+          <div className="flex gap-2">
+            {/* Y axis labels */}
+            <div className="flex flex-col justify-between h-56 pr-1 text-right shrink-0 w-8">
+              <span className="font-mono text-[10px] text-gris-texte/40">100</span>
+              <span className="font-mono text-[10px] text-gris-texte/40">75</span>
+              <span className="font-mono text-[10px] text-gris-texte/40">50</span>
+              <span className="font-mono text-[10px] text-gris-texte/40">25</span>
+              <span className="font-mono text-[10px] text-gris-texte/40">0</span>
+            </div>
+
+            {/* Chart area */}
+            <div className="flex-1 relative">
+              {/* Horizontal grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                {[0, 1, 2, 3, 4].map(i => (
+                  <div key={i} className="border-b border-gris-leger/40 h-0" />
+                ))}
+              </div>
+
+              {/* Bars */}
+              <div className="flex items-end gap-2 h-56 relative z-10">
+                {barData.map((d, i) => {
+                  const colors = ['#1A8F8A', '#1A8F8A', '#1A8F8A', '#1A8F8A', '#1A8F8A', '#1A2B3C', '#1A8F8A', '#1A8F8A']
+                  return (
+                    <div key={d.label} className="flex-1 flex flex-col items-center justify-end h-full">
+                      <div
+                        className="w-full rounded-t-md transition-all hover:opacity-80 relative group"
+                        style={{
+                          height: `${(d.value / maxBar) * 100}%`,
+                          backgroundColor: i === 5 ? '#1A2B3C' : colors[i],
+                        }}
+                      >
+                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 font-mono text-xs font-semibold text-bleu-nuit">
+                          {d.value}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* X axis labels */}
+          <div className="flex gap-2 ml-10">
             {barData.map((d) => (
-              <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
-                <span className="font-mono text-xs text-gris-texte/60">{d.value}</span>
-                <div
-                  className="w-full rounded-t-lg transition-all hover:opacity-80"
-                  style={{
-                    height: `${(d.value / maxBar) * 100}%`,
-                    backgroundColor: '#1A8F8A',
-                  }}
-                />
-                <span className="text-xs text-gris-texte/50 mt-1">{d.label}</span>
+              <div key={d.label} className="flex-1 text-center">
+                <span className="text-xs text-gris-texte/50">{d.label}</span>
               </div>
             ))}
           </div>

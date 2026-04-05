@@ -196,71 +196,89 @@ export default function CouleursPage() {
       <section className="mb-16">
         <h2 className="text-2xl font-semibold mb-3">Valeurs fondatrices</h2>
         <p className="text-sm text-gris-texte/70 mb-8 max-w-2xl leading-relaxed">
-          Chaque couleur Emancia a été choisie pour incarner une valeur fondatrice de la marque. Ce n'est pas un choix esthétique : c'est un langage visuel qui permet à chaque membre de l'équipe de communiquer les bons messages, instinctivement.
+          Chaque couleur Emancia a été choisie pour incarner une valeur fondatrice de la marque. Ce n&apos;est pas un choix esthétique : c&apos;est un langage visuel qui permet à chaque membre de l&apos;équipe de communiquer les bons messages, instinctivement.
         </p>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             {
               title: 'Rigueur & Qualité',
               color: brand.colors.primary.bleuNuit.hex,
               colorName: 'Bleu nuit',
-              why: 'Le bleu nuit est la couleur des institutions financières de confiance, des cabinets d\'audit et des organismes de référence. Il incarne l\'autorité intellectuelle, la profondeur d\'analyse et le sérieux.',
-              meaning: 'Chez Emancia, cette valeur signifie que chaque contenu publié est fiable, sourcé et pédagogiquement solide. Nous ne publions rien sans vérification. La crédibilité se construit par l\'excellence, pas par le volume.',
-              inBrand: 'Utilisé pour les titres, le texte principal et le footer — les éléments qui structurent et ancrent l\'information.',
+              hex: '#1A2B3C',
+              lightText: true,
+              why: 'Couleur des institutions financières de confiance. Autorité intellectuelle, profondeur d\'analyse, sérieux.',
+              meaning: 'Chaque contenu publié est fiable, sourcé et pédagogiquement solide. La crédibilité se construit par l\'excellence.',
+              usage: 'Titres, texte principal, footer',
             },
             {
               title: 'Transparence',
               color: brand.colors.primary.teal.hex,
               colorName: 'Teal',
-              why: 'Le teal combine le bleu (confiance) et le vert (clarté). En psychologie des couleurs, il évoque l\'ouverture, l\'honnêteté et l\'équilibre. C\'est aussi la couleur principale de notre logo — la colombe qui s\'envole vers la lumière.',
-              meaning: 'Nous citons toujours nos sources. Nous mentionnons les risques à côté des opportunités. Pas de conflit d\'intérêt, pas de partenariats cachés. Si une information est incomplète, on le dit.',
-              inBrand: 'Couleur principale du logo et de l\'identité — elle porte la promesse de marque sur chaque support.',
+              hex: '#1A8F8A',
+              lightText: true,
+              why: 'Fusion du bleu (confiance) et du vert (clarté). Ouverture, honnêteté, équilibre. La colombe qui s\'envole vers la lumière.',
+              meaning: 'Nous citons nos sources, mentionnons les risques. Pas de conflit d\'intérêt, pas de partenariats cachés.',
+              usage: 'Logo, identité, couleur principale',
             },
             {
               title: 'Émancipation',
               color: brand.colors.secondary.prune.hex,
               colorName: 'Prune doux',
-              why: 'Le violet/prune est historiquement lié à la transformation, au dépassement de soi et à la liberté conquise. Sa version adoucie (prune doux) rend cette ambition accessible et chaleureuse, sans élitisme.',
-              meaning: 'Notre mission fondatrice : donner à chacun les clés de sa liberté financière. Pas des réponses toutes faites, mais les outils pour comprendre, décider et agir en autonomie.',
-              inBrand: 'Réservé aux CTA et accents — les moments où l\'on invite l\'utilisateur à passer à l\'action et à prendre le contrôle.',
+              hex: '#7A4F6D',
+              lightText: true,
+              why: 'Lié à la transformation et à la liberté conquise. Sa version adoucie rend l\'ambition accessible et chaleureuse.',
+              meaning: 'Donner à chacun les clés de sa liberté financière. Les outils pour comprendre, décider et agir.',
+              usage: 'CTA, accents, call-to-action',
             },
             {
               title: 'Authenticité',
               color: brand.colors.secondary.sauge.hex,
               colorName: 'Sauge',
-              why: 'Le vert sauge évoque la croissance naturelle, la sagesse acquise avec le temps et la sincérité. C\'est l\'anti-marketing agressif : pas de flashy, pas d\'artifice, juste du vrai.',
-              meaning: 'Pas de fausses promesses de rendement. Pas de financement opaque. Une marque qui dit ce qu\'elle fait et fait ce qu\'elle dit. Proche de sa communauté, honnête sur ses limites.',
-              inBrand: 'Utilisé pour les illustrations et décorations — il humanise la marque et rappelle que la finance, c\'est au service de la vie réelle.',
+              hex: '#A8C280',
+              lightText: false,
+              why: 'Croissance naturelle, sagesse et sincérité. L\'anti-marketing agressif : pas de flashy, juste du vrai.',
+              meaning: 'Pas de fausses promesses. Une marque qui dit ce qu\'elle fait et fait ce qu\'elle dit.',
+              usage: 'Illustrations, décorations',
             },
           ].map((v) => (
-            <div key={v.title} className="bg-white rounded-2xl overflow-hidden border border-gris-leger/30">
-              <div className="flex items-stretch">
-                {/* Color band */}
-                <div className="w-2 shrink-0" style={{ backgroundColor: v.color }} />
-                <div className="flex-1 p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full" style={{ backgroundColor: v.color }} />
-                    <div>
-                      <h3 className="font-semibold text-lg" style={{ color: v.color }}>{v.title}</h3>
-                      <p className="text-xs font-mono text-gris-texte/50">{v.colorName} — {v.color}</p>
-                    </div>
-                  </div>
+            <div key={v.title} className="rounded-2xl overflow-hidden border border-gris-leger/30 group">
+              {/* Color header block */}
+              <div className="relative px-6 py-8 overflow-hidden" style={{ backgroundColor: v.color }}>
+                {/* Large letter watermark */}
+                <span
+                  className="absolute -right-4 -top-6 text-[120px] font-display font-bold leading-none pointer-events-none select-none"
+                  style={{ color: v.lightText ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                >
+                  {v.title[0]}
+                </span>
+                <div className="relative z-10">
+                  <h3 className={`font-display text-xl font-semibold mb-1 ${v.lightText ? 'text-white' : 'text-bleu-nuit'}`}>
+                    {v.title}
+                  </h3>
+                  <p className={`text-sm font-mono ${v.lightText ? 'text-white/60' : 'text-bleu-nuit/50'}`}>
+                    {v.colorName} — {v.hex}
+                  </p>
+                </div>
+              </div>
 
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gris-texte/40 mb-1">Pourquoi cette couleur</p>
-                      <p className="text-sm text-gris-texte/80 leading-relaxed">{v.why}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gris-texte/40 mb-1">Ce que cela signifie chez Emancia</p>
-                      <p className="text-sm text-gris-texte/80 leading-relaxed">{v.meaning}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gris-texte/40 mb-1">Dans la charte</p>
-                      <p className="text-sm text-gris-texte/60 italic leading-relaxed">{v.inBrand}</p>
-                    </div>
-                  </div>
+              {/* Content */}
+              <div className="bg-white p-6 space-y-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: v.color }}>
+                    Psychologie
+                  </p>
+                  <p className="text-sm text-gris-texte/80 leading-relaxed">{v.why}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: v.color }}>
+                    Chez Emancia
+                  </p>
+                  <p className="text-sm text-gris-texte/80 leading-relaxed">{v.meaning}</p>
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-gris-leger/30">
+                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: v.color }} />
+                  <p className="text-xs text-gris-texte/50">{v.usage}</p>
                 </div>
               </div>
             </div>

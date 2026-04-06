@@ -324,15 +324,38 @@ export default function IdeesContenusPage() {
         {compact ? (
           // Compact card for board view
           <div>
-            <div className="flex items-start gap-2 mb-2">
-              <GripVertical size={14} className="text-gris-texte/20 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm text-bleu-nuit leading-snug line-clamp-2">{idea.title}</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <div
+                className="w-6 h-6 rounded flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${platform?.color || '#888'}15` }}
+              >
+                <PlatformIcon size={12} style={{ color: platform?.color || '#888' }} />
               </div>
+              <span className="text-[10px] text-gris-texte/40 truncate">{idea.content_type}</span>
+              {isOwner && (
+                <div className="flex items-center gap-0.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); startEdit(idea) }}
+                    className="p-1 rounded text-gris-texte/30 hover:text-teal hover:bg-teal/5 transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil size={11} />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(idea.id) }}
+                    className="p-1 rounded text-gris-texte/30 hover:text-error hover:bg-error/5 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 size={11} />
+                  </button>
+                </div>
+              )}
             </div>
 
+            <h3 className="font-semibold text-sm text-bleu-nuit leading-snug line-clamp-2 mb-1">{idea.title}</h3>
+
             {idea.description && (
-              <p className="text-xs text-gris-texte/60 leading-relaxed mb-2 line-clamp-2 ml-6">
+              <p className="text-xs text-gris-texte/60 leading-relaxed mb-1.5 line-clamp-2">
                 <Linkify text={idea.description} />
               </p>
             )}
@@ -342,51 +365,20 @@ export default function IdeesContenusPage() {
                 href={idea.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[10px] text-teal hover:text-teal-dark transition-colors mb-2 ml-6"
+                className="inline-flex items-center gap-1 text-[10px] text-teal hover:text-teal-dark transition-colors mb-1.5"
                 onClick={(e) => e.stopPropagation()}
               >
                 <ExternalLink size={10} />
-                <span className="underline underline-offset-2 truncate max-w-[150px]">
+                <span className="underline underline-offset-2 truncate max-w-[180px]">
                   {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                 </span>
               </a>
             )}
 
-            <div className="flex items-center justify-between ml-6">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-5 h-5 rounded flex items-center justify-center"
-                  style={{ backgroundColor: `${platform?.color || '#888'}15` }}
-                >
-                  <PlatformIcon size={11} style={{ color: platform?.color || '#888' }} />
-                </div>
-                <span className="text-[10px] text-gris-texte/40">{idea.content_type}</span>
-              </div>
-
-              {isOwner && (
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); startEdit(idea) }}
-                    className="p-1 rounded text-gris-texte/30 hover:text-teal hover:bg-teal/5 transition-colors"
-                    title="Modifier"
-                  >
-                    <Pencil size={12} />
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(idea.id) }}
-                    className="p-1 rounded text-gris-texte/30 hover:text-error hover:bg-error/5 transition-colors"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 mt-2 ml-6 text-[10px] text-gris-texte/30">
-              <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>
+            <div className="flex items-center gap-2 text-[10px] text-gris-texte/30 pt-1.5 border-t border-gris-leger/20">
+              <span className="truncate">{idea.user_name || idea.user_email?.split('@')[0]}</span>
               <span>·</span>
-              <span>{timeAgo(idea.created_at)}</span>
+              <span className="shrink-0">{timeAgo(idea.created_at)}</span>
             </div>
           </div>
         ) : (

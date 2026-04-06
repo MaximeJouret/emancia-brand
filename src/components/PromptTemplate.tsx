@@ -53,15 +53,16 @@ Créer un projet Next.js (App Router) avec :
 ## STRUCTURE DU SITE
 
 ### Authentification
-- Page login (\`/login\`) : fond couleur sombre, logo centré, formulaire glassmorphism
-- Inscription libre (email + mot de passe) pour les membres de l'équipe
+- Page login (\`/login\`) : fond pleine page couleur sombre, logo centré au-dessus, formulaire glassmorphism, cercles de couleur en fond pour la profondeur
+- Deux modes : **Se connecter** (email + mot de passe) et **Créer un compte** (nom + email + mot de passe, rôle viewer par défaut)
 - Middleware de protection des routes (redirection vers /login si non connecté)
 - Callback route pour la confirmation email (\`/auth/callback\`)
+- IMPORTANT : déplacer \`createClient()\` dans les handlers (pas au top-level du composant) pour éviter les erreurs de prerendering Vercel
 
 ### Layout principal
 - **Sidebar** à gauche (couleur primaire, logo en haut, navigation par sections)
-- **Zone de contenu** à droite avec fond clair
-- **Page profil** avec rôle (admin/viewer) et déconnexion
+- **Zone de contenu** à droite avec fond clair, \`max-w-6xl\` pour laisser de la place au kanban
+- **Page profil** avec rôle (admin/viewer), déconnexion, et bouton "Prompt Template" (ce prompt, copiable en un clic)
 
 ### Pages à créer
 
@@ -77,7 +78,16 @@ Créer un projet Next.js (App Router) avec :
 10. **Tokens** (\`/tokens\`) — Export des design tokens en CSS / JSON / Tailwind
 11. **Contextes** (\`/contextes\`) — Mockups du logo en situation réelle (navbar, email, réseaux sociaux, footer)
 12. **Formes** (\`/formes\`) — Playground interactif pour tester radius et couleurs
-13. **Idées de contenus** (\`/idees-contenus\`) — CRUD collaboratif : proposer des idées de contenus par plateforme (Instagram, YouTube, LinkedIn, TikTok, X) avec statuts (Idée → Validé → En cours → Publié), filtres, stats. Chaque membre peut modifier/supprimer ses propres idées. Support des liens cliquables.
+13. **Idées de contenus** (\`/idees-contenus\`) — CRUD collaboratif avec vue **Kanban (Board)** et vue **Liste** :
+    - Proposer des idées par plateforme (Instagram, YouTube, LinkedIn, TikTok, X)
+    - 4 colonnes de statut : Idée → Validé → En cours → Publié
+    - **Drag & drop** : glisser les cartes entre colonnes pour changer le statut (HTML5 Drag API, mise à jour optimiste en base)
+    - Toggle Board / Liste en haut à droite
+    - Barre de stats avec compteurs par statut
+    - Filtre par plateforme
+    - Champ lien optionnel + détection auto des URLs dans la description (composant Linkify)
+    - Chaque membre peut modifier/supprimer ses propres idées uniquement
+    - Formulaire modal pour création/édition
 
 ### Navigation sidebar (groupée)
 \`\`\`
@@ -162,6 +172,8 @@ CREATE POLICY "Suppression par le propriétaire"
 6. **Données numériques** : Toujours en \`font-mono\`
 7. **Bouton principal** : \`bg-[primaire] text-white rounded-lg hover:bg-[primaire-dark]\`
 8. **Glassmorphism** (login) : \`bg-white/[0.07] backdrop-blur-xl border border-white/10\`
+9. **Drag & drop** : utiliser l'API HTML5 native (pas de librairie), avec mise à jour optimiste + rollback en cas d'erreur
+10. **CSS Specificity** : les headings globaux (h1-h4) forcent la couleur sombre → ajouter \`.dark-context\` et \`.sidebar-scroll\` avec \`color: inherit\` pour les zones à fond coloré. Utiliser \`style={{ color: '#ffffff' }}\` en inline si nécessaire
 
 ---
 

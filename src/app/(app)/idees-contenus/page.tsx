@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Pencil, Trash2, X, Check, Camera, Play, Briefcase, MessageCircle, Video, Lightbulb, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, Camera, Play, Briefcase, MessageCircle, Video, Lightbulb, ExternalLink, GripVertical, List, Columns3 } from 'lucide-react'
 
 interface ContentIdea {
   id: string
@@ -66,10 +66,10 @@ const CONTENT_TYPES = [
 ]
 
 const STATUSES = [
-  { value: 'idee', label: 'Idée', bg: 'bg-sauge/15', text: 'text-sauge', dot: 'bg-sauge' },
-  { value: 'valide', label: 'Validé', bg: 'bg-teal/10', text: 'text-teal', dot: 'bg-teal' },
-  { value: 'en_cours', label: 'En cours', bg: 'bg-warning/10', text: 'text-warning', dot: 'bg-warning' },
-  { value: 'publie', label: 'Publié', bg: 'bg-success/10', text: 'text-success', dot: 'bg-success' },
+  { value: 'idee', label: 'Idée', bg: 'bg-sauge/15', text: 'text-sauge', dot: 'bg-sauge', color: '#A8C280', headerBg: 'bg-sauge/10', borderColor: 'border-sauge/20' },
+  { value: 'valide', label: 'Validé', bg: 'bg-teal/10', text: 'text-teal', dot: 'bg-teal', color: '#1A8F8A', headerBg: 'bg-teal/10', borderColor: 'border-teal/20' },
+  { value: 'en_cours', label: 'En cours', bg: 'bg-warning/10', text: 'text-warning', dot: 'bg-warning', color: '#F0A500', headerBg: 'bg-warning/10', borderColor: 'border-warning/20' },
+  { value: 'publie', label: 'Publié', bg: 'bg-success/10', text: 'text-success', dot: 'bg-success', color: '#4CAF82', headerBg: 'bg-success/10', borderColor: 'border-success/20' },
 ]
 
 function getStatusInfo(status: string) {
@@ -99,8 +99,13 @@ export default function IdeesContenusPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [filterPlatform, setFilterPlatform] = useState<string>('all')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [viewMode, setViewMode] = useState<'board' | 'list'>('board')
   const [error, setError] = useState('')
+
+  // Drag state
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null)
+  const dragCounter = useRef<Record<string, number>>({})
 
   // Form state
   const [formTitle, setFormTitle] = useState('')
@@ -204,9 +209,83 @@ export default function IdeesContenusPage() {
     fetchIdeas()
   }
 
+  const handleStatusChange = async (ideaId: string, newStatus: string) => {
+    const idea = ideas.find(i => i.id === ideaId)
+    if (!idea) return
+
+    // Optimistic update
+    setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: newStatus } : i))
+
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('content_ideas')
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', ideaId)
+
+    if (error) {
+      setError(error.message)
+      // Rollback
+      setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: idea.status } : i))
+    }
+  }
+
+  // Drag handlers
+  const handleDragStart = (e: React.DragEvent, ideaId: string) => {
+    setDraggedId(ideaId)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', ideaId)
+    // Make the drag image slightly transparent
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '0.5'
+    }
+  }
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    setDraggedId(null)
+    setDragOverColumn(null)
+    dragCounter.current = {}
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.style.opacity = '1'
+    }
+  }
+
+  const handleColumnDragEnter = (e: React.DragEvent, statusValue: string) => {
+    e.preventDefault()
+    dragCounter.current[statusValue] = (dragCounter.current[statusValue] || 0) + 1
+    setDragOverColumn(statusValue)
+  }
+
+  const handleColumnDragLeave = (statusValue: string) => {
+    dragCounter.current[statusValue] = (dragCounter.current[statusValue] || 0) - 1
+    if (dragCounter.current[statusValue] <= 0) {
+      dragCounter.current[statusValue] = 0
+      if (dragOverColumn === statusValue) {
+        setDragOverColumn(null)
+      }
+    }
+  }
+
+  const handleColumnDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleColumnDrop = (e: React.DragEvent, newStatus: string) => {
+    e.preventDefault()
+    const ideaId = e.dataTransfer.getData('text/plain')
+    if (ideaId && draggedId) {
+      const idea = ideas.find(i => i.id === ideaId)
+      if (idea && idea.status !== newStatus) {
+        handleStatusChange(ideaId, newStatus)
+      }
+    }
+    setDraggedId(null)
+    setDragOverColumn(null)
+    dragCounter.current = {}
+  }
+
   const filteredIdeas = ideas.filter(idea => {
     if (filterPlatform !== 'all' && idea.platform !== filterPlatform) return false
-    if (filterStatus !== 'all' && idea.status !== filterStatus) return false
     return true
   })
 
@@ -226,6 +305,171 @@ export default function IdeesContenusPage() {
     )
   }
 
+  const renderIdeaCard = (idea: ContentIdea, compact = false) => {
+    const platform = getPlatformInfo(idea.platform)
+    const status = getStatusInfo(idea.status)
+    const isOwner = userId === idea.user_id
+    const PlatformIcon = platform?.icon || MessageCircle
+
+    return (
+      <div
+        key={idea.id}
+        draggable
+        onDragStart={(e) => handleDragStart(e, idea.id)}
+        onDragEnd={handleDragEnd}
+        className={`bg-white rounded-xl border border-gris-leger/30 hover:shadow-md transition-all group cursor-grab active:cursor-grabbing ${
+          compact ? 'p-3' : 'p-5'
+        } ${draggedId === idea.id ? 'opacity-50 scale-95' : ''}`}
+      >
+        {compact ? (
+          // Compact card for board view
+          <div>
+            <div className="flex items-start gap-2 mb-2">
+              <GripVertical size={14} className="text-gris-texte/20 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm text-bleu-nuit leading-snug line-clamp-2">{idea.title}</h3>
+              </div>
+            </div>
+
+            {idea.description && (
+              <p className="text-xs text-gris-texte/60 leading-relaxed mb-2 line-clamp-2 ml-6">
+                <Linkify text={idea.description} />
+              </p>
+            )}
+
+            {idea.link && (
+              <a
+                href={idea.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[10px] text-teal hover:text-teal-dark transition-colors mb-2 ml-6"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink size={10} />
+                <span className="underline underline-offset-2 truncate max-w-[150px]">
+                  {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                </span>
+              </a>
+            )}
+
+            <div className="flex items-center justify-between ml-6">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-5 h-5 rounded flex items-center justify-center"
+                  style={{ backgroundColor: `${platform?.color || '#888'}15` }}
+                >
+                  <PlatformIcon size={11} style={{ color: platform?.color || '#888' }} />
+                </div>
+                <span className="text-[10px] text-gris-texte/40">{idea.content_type}</span>
+              </div>
+
+              {isOwner && (
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); startEdit(idea) }}
+                    className="p-1 rounded text-gris-texte/30 hover:text-teal hover:bg-teal/5 transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil size={12} />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(idea.id) }}
+                    className="p-1 rounded text-gris-texte/30 hover:text-error hover:bg-error/5 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 mt-2 ml-6 text-[10px] text-gris-texte/30">
+              <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>
+              <span>·</span>
+              <span>{timeAgo(idea.created_at)}</span>
+            </div>
+          </div>
+        ) : (
+          // Full card for list view
+          <div className="flex items-start gap-4">
+            <div className="flex items-center gap-2">
+              <GripVertical size={16} className="text-gris-texte/20 shrink-0" />
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${platform?.color || '#888'}15` }}
+              >
+                <PlatformIcon size={18} style={{ color: platform?.color || '#888' }} />
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-bleu-nuit truncate">{idea.title}</h3>
+                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${status.bg} ${status.text}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                  {status.label}
+                </span>
+              </div>
+
+              {idea.description && (
+                <p className="text-sm text-gris-texte/70 leading-relaxed mb-2 line-clamp-2">
+                  <Linkify text={idea.description} />
+                </p>
+              )}
+
+              {idea.link && (
+                <a
+                  href={idea.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-teal hover:text-teal-dark transition-colors mb-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink size={12} />
+                  <span className="underline underline-offset-2">
+                    {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '').slice(0, 50)}
+                    {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '').length > 50 ? '...' : ''}
+                  </span>
+                </a>
+              )}
+
+              <div className="flex items-center gap-3 text-[11px] text-gris-texte/40">
+                <span className="font-medium" style={{ color: platform?.color || '#888' }}>
+                  {platform?.label || idea.platform}
+                </span>
+                <span>·</span>
+                <span>{idea.content_type}</span>
+                <span>·</span>
+                <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>
+                <span>·</span>
+                <span>{timeAgo(idea.created_at)}</span>
+              </div>
+            </div>
+
+            {isOwner && (
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <button
+                  onClick={() => startEdit(idea)}
+                  className="p-2 rounded-lg text-gris-texte/40 hover:text-teal hover:bg-teal/5 transition-colors"
+                  title="Modifier"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => handleDelete(idea.id)}
+                  className="p-2 rounded-lg text-gris-texte/40 hover:text-error hover:bg-error/5 transition-colors"
+                  title="Supprimer"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Header */}
@@ -237,7 +481,7 @@ export default function IdeesContenusPage() {
             </h1>
             <p className="text-sm text-gris-texte/70 max-w-xl leading-relaxed">
               Proposez des idées de contenus pour les réseaux sociaux et YouTube.
-              Chaque membre de l&apos;équipe peut ajouter, modifier ou supprimer ses propres idées.
+              Glissez-déposez les cartes entre les colonnes pour changer leur statut.
             </p>
           </div>
           <button
@@ -264,7 +508,7 @@ export default function IdeesContenusPage() {
         ))}
       </div>
 
-      {/* Filters */}
+      {/* Filters + View toggle */}
       <div className="flex items-center gap-3 mb-6">
         <select
           value={filterPlatform}
@@ -276,19 +520,31 @@ export default function IdeesContenusPage() {
             <option key={p.value} value={p.value}>{p.label}</option>
           ))}
         </select>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gris-leger text-sm bg-white text-gris-texte focus:outline-none focus:border-teal"
-        >
-          <option value="all">Tous les statuts</option>
-          {STATUSES.map(s => (
-            <option key={s.value} value={s.value}>{s.label}</option>
-          ))}
-        </select>
-        <span className="text-xs text-gris-texte/40 ml-auto">
-          {filteredIdeas.length} résultat{filteredIdeas.length !== 1 ? 's' : ''}
-        </span>
+
+        <div className="flex items-center gap-1 ml-auto bg-white rounded-lg border border-gris-leger/30 p-0.5">
+          <button
+            onClick={() => setViewMode('board')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              viewMode === 'board'
+                ? 'bg-teal text-white'
+                : 'text-gris-texte/50 hover:text-gris-texte'
+            }`}
+          >
+            <Columns3 size={13} />
+            Board
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              viewMode === 'list'
+                ? 'bg-teal text-white'
+                : 'text-gris-texte/50 hover:text-gris-texte'
+            }`}
+          >
+            <List size={13} />
+            Liste
+          </button>
+        </div>
       </div>
 
       {/* Error */}
@@ -413,7 +669,7 @@ export default function IdeesContenusPage() {
         </div>
       )}
 
-      {/* Ideas list */}
+      {/* Content */}
       {filteredIdeas.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gris-leger/30 p-12 text-center">
           <Lightbulb size={40} className="mx-auto text-gris-texte/20 mb-4" />
@@ -432,96 +688,67 @@ export default function IdeesContenusPage() {
             </button>
           )}
         </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredIdeas.map((idea) => {
-            const platform = getPlatformInfo(idea.platform)
-            const status = getStatusInfo(idea.status)
-            const isOwner = userId === idea.user_id
-            const PlatformIcon = platform?.icon || MessageCircle
+      ) : viewMode === 'board' ? (
+        /* ===== BOARD VIEW (Kanban) ===== */
+        <div className="grid grid-cols-4 gap-4">
+          {STATUSES.map(status => {
+            const columnIdeas = filteredIdeas.filter(i => i.status === status.value)
+            const isOver = dragOverColumn === status.value
 
             return (
               <div
-                key={idea.id}
-                className="bg-white rounded-xl border border-gris-leger/30 p-5 hover:shadow-sm transition-shadow group"
+                key={status.value}
+                onDragEnter={(e) => handleColumnDragEnter(e, status.value)}
+                onDragLeave={() => handleColumnDragLeave(status.value)}
+                onDragOver={handleColumnDragOver}
+                onDrop={(e) => handleColumnDrop(e, status.value)}
+                className={`rounded-xl transition-all min-h-[300px] flex flex-col ${
+                  isOver
+                    ? `bg-white ring-2 shadow-lg`
+                    : 'bg-blanc-casse/60'
+                }`}
+                style={isOver ? { '--tw-ring-color': status.color } as React.CSSProperties : undefined}
               >
-                <div className="flex items-start gap-4">
-                  {/* Platform icon */}
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ backgroundColor: `${platform?.color || '#888'}15` }}
-                  >
-                    <PlatformIcon size={18} style={{ color: platform?.color || '#888' }} />
+                {/* Column header */}
+                <div className={`flex items-center justify-between px-3 py-3 rounded-t-xl ${status.headerBg}`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${status.dot}`} />
+                    <span className={`text-sm font-semibold ${status.text}`}>{status.label}</span>
                   </div>
+                  <span className={`text-xs font-mono font-medium ${status.text} opacity-60`}>
+                    {columnIdeas.length}
+                  </span>
+                </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-bleu-nuit truncate">{idea.title}</h3>
-                      <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${status.bg} ${status.text}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                        {status.label}
-                      </span>
-                    </div>
+                {/* Cards */}
+                <div className="flex-1 p-2 space-y-2 overflow-y-auto">
+                  {columnIdeas.map(idea => renderIdeaCard(idea, true))}
 
-                    {idea.description && (
-                      <p className="text-sm text-gris-texte/70 leading-relaxed mb-2 line-clamp-2">
-                        <Linkify text={idea.description} />
+                  {columnIdeas.length === 0 && (
+                    <div className={`flex items-center justify-center h-20 rounded-lg border-2 border-dashed transition-colors ${
+                      isOver ? `${status.borderColor} ${status.bg}` : 'border-gris-leger/20'
+                    }`}>
+                      <p className="text-[11px] text-gris-texte/30">
+                        {isOver ? 'Déposer ici' : 'Vide'}
                       </p>
-                    )}
-
-                    {idea.link && (
-                      <a
-                        href={idea.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-teal hover:text-teal-dark transition-colors mb-2 group/link"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <ExternalLink size={12} />
-                        <span className="underline underline-offset-2">
-                          {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '').slice(0, 50)}
-                          {idea.link.replace(/^https?:\/\//, '').replace(/\/$/, '').length > 50 ? '...' : ''}
-                        </span>
-                      </a>
-                    )}
-
-                    <div className="flex items-center gap-3 text-[11px] text-gris-texte/40">
-                      <span className="font-medium" style={{ color: platform?.color || '#888' }}>
-                        {platform?.label || idea.platform}
-                      </span>
-                      <span>·</span>
-                      <span>{idea.content_type}</span>
-                      <span>·</span>
-                      <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>
-                      <span>·</span>
-                      <span>{timeAgo(idea.created_at)}</span>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Actions (owner only) */}
-                  {isOwner && (
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                      <button
-                        onClick={() => startEdit(idea)}
-                        className="p-2 rounded-lg text-gris-texte/40 hover:text-teal hover:bg-teal/5 transition-colors"
-                        title="Modifier"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(idea.id)}
-                        className="p-2 rounded-lg text-gris-texte/40 hover:text-error hover:bg-error/5 transition-colors"
-                        title="Supprimer"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                  {/* Drop zone indicator when column has cards */}
+                  {isOver && columnIdeas.length > 0 && (
+                    <div className={`flex items-center justify-center h-12 rounded-lg border-2 border-dashed ${status.borderColor} ${status.bg} transition-all`}>
+                      <p className={`text-[11px] ${status.text} opacity-60`}>Déposer ici</p>
                     </div>
                   )}
                 </div>
               </div>
             )
           })}
+        </div>
+      ) : (
+        /* ===== LIST VIEW ===== */
+        <div className="space-y-3">
+          {filteredIdeas.map(idea => renderIdeaCard(idea, false))}
         </div>
       )}
     </div>

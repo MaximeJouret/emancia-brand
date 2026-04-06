@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 const radiusTokens = [
   { name: 'sm', value: '4px', desc: 'Badges, tags, petits éléments' },
@@ -127,6 +128,7 @@ export default function FormesPage() {
           ))}
         </div>
       </section>
+      <CommentsSection pageSlug="formes" />
     </>
   )
 }

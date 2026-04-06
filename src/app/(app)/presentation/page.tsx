@@ -1,0 +1,474 @@
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
+import { brand } from '@/lib/brand'
+import { ChevronLeft, ChevronRight, X, Maximize2 } from 'lucide-react'
+
+const SLIDES = [
+  {
+    id: 'cover',
+    title: '',
+    category: '',
+  },
+  {
+    id: 'mission',
+    title: 'Notre mission',
+    category: 'Identité',
+  },
+  {
+    id: 'valeurs',
+    title: 'Nos valeurs fondatrices',
+    category: 'Identité',
+  },
+  {
+    id: 'logo',
+    title: 'Notre logo',
+    category: 'Logo',
+  },
+  {
+    id: 'couleurs',
+    title: 'Palette de couleurs',
+    category: 'Couleurs',
+  },
+  {
+    id: 'typographie',
+    title: 'Typographie',
+    category: 'Typographie',
+  },
+  {
+    id: 'ton',
+    title: 'Ton éditorial',
+    category: 'Communication',
+  },
+  {
+    id: 'regles',
+    title: 'Do & Don\'t',
+    category: 'Règles',
+  },
+  {
+    id: 'outils',
+    title: 'Vos outils',
+    category: 'Outils',
+  },
+  {
+    id: 'end',
+    title: '',
+    category: '',
+  },
+]
+
+function CoverSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center px-12">
+      <Image
+        src="/logos/logo-main.svg"
+        alt="Emancia"
+        width={320}
+        height={80}
+        className="mb-6"
+      />
+      <div className="w-16 h-0.5 bg-teal mb-6" />
+      <h1 className="font-display text-4xl font-bold text-bleu-nuit mb-3">
+        Charte Graphique
+      </h1>
+      <p className="text-lg text-gris-texte/60 max-w-md">
+        Guide de marque et système de design pour l&apos;équipe Emancia
+      </p>
+      <div className="mt-12 flex items-center gap-2 text-sm text-gris-texte/30">
+        <span>Utilisez les flèches</span>
+        <kbd className="px-2 py-0.5 rounded border border-gris-leger text-xs">←</kbd>
+        <kbd className="px-2 py-0.5 rounded border border-gris-leger text-xs">→</kbd>
+        <span>pour naviguer</span>
+      </div>
+    </div>
+  )
+}
+
+function MissionSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-6">Notre mission</p>
+      <h2 className="font-display text-3xl font-bold text-bleu-nuit mb-8 leading-snug">
+        {brand.tagline}
+      </h2>
+      <div className="w-12 h-0.5 bg-teal/30 mb-8" />
+      <div className="grid grid-cols-3 gap-8 w-full">
+        {['Éducation financière', 'Investissement responsable', 'Accessibilité', 'Transparence', 'Indépendance', 'Pédagogie'].map((kw, i) => (
+          <div key={i} className="bg-teal/5 rounded-xl px-4 py-3">
+            <p className="text-sm font-medium text-teal">{kw}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ValeursSlide() {
+  const valeurs = [
+    { name: 'Confiance', color: '#1A8F8A', letter: 'C', desc: 'Fiabilité & transparence' },
+    { name: 'Accessibilité', color: '#7A4F6D', letter: 'A', desc: 'Éducation pour tous' },
+    { name: 'Rigueur & Qualité', color: '#1A2B3C', letter: 'R', desc: 'Excellence & précision' },
+    { name: 'Authenticité', color: '#A8C280', letter: 'A', desc: 'Sincérité & cohérence' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-4xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Nos valeurs</p>
+      <div className="grid grid-cols-4 gap-6 w-full">
+        {valeurs.map((v) => (
+          <div key={v.name} className="text-center">
+            <div
+              className="w-full aspect-square rounded-2xl flex items-center justify-center mb-4 relative overflow-hidden"
+              style={{ backgroundColor: v.color }}
+            >
+              <span className="text-white/10 text-[120px] font-display font-bold absolute">{v.letter}</span>
+            </div>
+            <h3 className="font-display text-base font-semibold text-bleu-nuit mb-1">{v.name}</h3>
+            <p className="text-xs text-gris-texte/50">{v.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function LogoSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Notre logo</p>
+      <div className="bg-white rounded-2xl border border-gris-leger/30 p-12 mb-8 w-full flex items-center justify-center">
+        <Image
+          src="/logos/logo-main.svg"
+          alt="Emancia"
+          width={300}
+          height={75}
+        />
+      </div>
+      <div className="grid grid-cols-3 gap-4 w-full">
+        <div className="bg-blanc-casse rounded-xl p-6 flex items-center justify-center">
+          <Image src="/logos/logo-main.svg" alt="Fond clair" width={140} height={35} />
+        </div>
+        <div className="bg-bleu-nuit rounded-xl p-6 flex items-center justify-center">
+          <Image src="/logos/logo-main.svg" alt="Fond sombre" width={140} height={35} className="brightness-0 invert" />
+        </div>
+        <div className="bg-teal rounded-xl p-6 flex items-center justify-center">
+          <Image src="/logos/logo-main.svg" alt="Fond teal" width={140} height={35} className="brightness-0 invert" />
+        </div>
+      </div>
+      <p className="text-xs text-gris-texte/40 mt-4">3 déclinaisons chromatiques pour tous les contextes</p>
+    </div>
+  )
+}
+
+function CouleursSlide() {
+  const colors = [
+    { name: 'Teal', hex: '#1A8F8A', role: 'Primaire' },
+    { name: 'Bleu Nuit', hex: '#1A2B3C', role: 'Fond sombre' },
+    { name: 'Blanc Cassé', hex: '#F2F5EE', role: 'Fond clair' },
+    { name: 'Prune', hex: '#7A4F6D', role: 'Accent' },
+    { name: 'Sauge', hex: '#A8C280', role: 'Accent' },
+    { name: 'Teal Clair', hex: '#88C9C7', role: 'Info' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-4xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Palette de couleurs</p>
+      <div className="grid grid-cols-6 gap-4 w-full">
+        {colors.map((c) => (
+          <div key={c.name} className="text-center">
+            <div
+              className="w-full aspect-[3/4] rounded-2xl mb-3 shadow-sm"
+              style={{ backgroundColor: c.hex }}
+            />
+            <p className="text-sm font-semibold text-bleu-nuit">{c.name}</p>
+            <p className="text-[11px] text-gris-texte/40 font-mono">{c.hex}</p>
+            <p className="text-[10px] text-teal mt-0.5">{c.role}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function TypographieSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Typographie</p>
+      <div className="w-full space-y-8">
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-8">
+          <p className="text-xs text-teal font-semibold uppercase tracking-wider mb-3">Display — Titres</p>
+          <p className="font-display text-4xl font-bold text-bleu-nuit">Fraunces</p>
+          <p className="font-display text-lg text-gris-texte/50 mt-1">Élégante, éditoriale, avec du caractère</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-8">
+          <p className="text-xs text-teal font-semibold uppercase tracking-wider mb-3">Body — Texte courant</p>
+          <p className="font-body text-4xl font-bold text-bleu-nuit">DM Sans</p>
+          <p className="font-body text-lg text-gris-texte/50 mt-1">Moderne, lisible, géométrique</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-8">
+          <p className="text-xs text-teal font-semibold uppercase tracking-wider mb-3">Mono — Données</p>
+          <p className="font-mono text-3xl font-bold text-bleu-nuit">JetBrains Mono</p>
+          <p className="font-mono text-base text-gris-texte/50 mt-1">€12,450.00 · +8.3% · #1A8F8A</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TonSlide() {
+  const axes = [
+    { label: 'Expert mais accessible', left: 'Jargon', right: 'Vulgarisation' },
+    { label: 'Confiant mais humble', left: 'Arrogant', right: 'Hésitant' },
+    { label: 'Motivant mais réaliste', left: 'Exagéré', right: 'Pessimiste' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Ton éditorial</p>
+      <div className="w-full space-y-6">
+        {axes.map((axis) => (
+          <div key={axis.label} className="bg-white rounded-2xl border border-gris-leger/30 p-6">
+            <p className="font-display text-lg font-semibold text-bleu-nuit text-center mb-4">{axis.label}</p>
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-error/60 font-medium w-24 text-right">{axis.left}</span>
+              <div className="flex-1 h-2 bg-gris-leger/30 rounded-full relative">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-teal rounded-full shadow-sm" />
+              </div>
+              <span className="text-xs text-error/60 font-medium w-24">{axis.right}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ReglesSlide() {
+  const rules = [
+    { do: 'Utiliser les couleurs de la palette', dont: 'Inventer de nouvelles couleurs' },
+    { do: 'Respecter les zones de protection du logo', dont: 'Déformer ou recadrer le logo' },
+    { do: 'Utiliser Fraunces pour les titres', dont: 'Mélanger trop de polices' },
+    { do: 'Maintenir un ton accessible et expert', dont: 'Utiliser du jargon financier complexe' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Les règles essentielles</p>
+      <div className="w-full space-y-3">
+        {rules.map((r, i) => (
+          <div key={i} className="grid grid-cols-2 gap-3">
+            <div className="bg-success/5 border border-success/15 rounded-xl p-4 flex items-start gap-3">
+              <span className="text-success text-lg font-bold mt-[-2px]">✓</span>
+              <p className="text-sm text-gris-texte/80">{r.do}</p>
+            </div>
+            <div className="bg-error/5 border border-error/15 rounded-xl p-4 flex items-start gap-3">
+              <span className="text-error text-lg font-bold mt-[-2px]">✗</span>
+              <p className="text-sm text-gris-texte/80">{r.dont}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function OutilsSlide() {
+  const tools = [
+    { name: 'Palette interactive', desc: 'Copier les couleurs en un clic', page: '/couleurs' },
+    { name: 'Composants UI', desc: 'Boutons, cards, badges prêts à l\'emploi', page: '/composants' },
+    { name: 'Export tokens', desc: 'CSS, JSON, Tailwind pour vos projets', page: '/tokens' },
+    { name: 'Idées de contenus', desc: 'Board kanban collaboratif', page: '/idees-contenus' },
+    { name: 'Commentaires', desc: 'Donnez votre avis sur chaque page', page: '' },
+    { name: 'Mockups contextuels', desc: 'Voir le logo en situation réelle', page: '/contextes' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-3xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Vos outils</p>
+      <div className="grid grid-cols-3 gap-4 w-full">
+        {tools.map((t) => (
+          <div key={t.name} className="bg-white rounded-2xl border border-gris-leger/30 p-5 text-center">
+            <h3 className="font-display text-base font-semibold text-bleu-nuit mb-1">{t.name}</h3>
+            <p className="text-xs text-gris-texte/50">{t.desc}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-gris-texte/30 mt-6">Tout est accessible depuis la sidebar à gauche</p>
+    </div>
+  )
+}
+
+function EndSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center px-12">
+      <Image
+        src="/logos/logo-icon.svg"
+        alt="Emancia"
+        width={80}
+        height={80}
+        className="mb-8 opacity-20"
+      />
+      <h2 className="font-display text-4xl font-bold text-bleu-nuit mb-4">
+        Merci !
+      </h2>
+      <p className="text-lg text-gris-texte/60 max-w-md mb-8">
+        Explorez la charte à votre rythme et n&apos;hésitez pas à commenter chaque rubrique.
+      </p>
+      <div className="flex items-center gap-3">
+        <a
+          href="/"
+          className="px-6 py-2.5 bg-teal text-white text-sm font-medium rounded-lg hover:bg-teal-dark transition-colors"
+        >
+          Explorer la charte
+        </a>
+        <a
+          href="/idees-contenus"
+          className="px-6 py-2.5 bg-bleu-nuit/5 text-bleu-nuit text-sm font-medium rounded-lg hover:bg-bleu-nuit/10 transition-colors"
+        >
+          Idées de contenus
+        </a>
+      </div>
+    </div>
+  )
+}
+
+const SLIDE_COMPONENTS: Record<string, React.FC> = {
+  cover: CoverSlide,
+  mission: MissionSlide,
+  valeurs: ValeursSlide,
+  logo: LogoSlide,
+  couleurs: CouleursSlide,
+  typographie: TypographieSlide,
+  ton: TonSlide,
+  regles: ReglesSlide,
+  outils: OutilsSlide,
+  end: EndSlide,
+}
+
+export default function PresentationPage() {
+  const [current, setCurrent] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  const goNext = useCallback(() => {
+    setCurrent(prev => Math.min(prev + 1, SLIDES.length - 1))
+  }, [])
+
+  const goPrev = useCallback(() => {
+    setCurrent(prev => Math.max(prev - 1, 0))
+  }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+      setIsFullscreen(true)
+    } else {
+      document.exitFullscreen()
+      setIsFullscreen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goNext() }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev() }
+      if (e.key === 'Escape') {
+        if (document.fullscreenElement) {
+          document.exitFullscreen()
+          setIsFullscreen(false)
+        }
+      }
+      if (e.key === 'f' || e.key === 'F') { toggleFullscreen() }
+    }
+    window.addEventListener('keydown', handleKey)
+
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFsChange)
+
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+      document.removeEventListener('fullscreenchange', handleFsChange)
+    }
+  }, [goNext, goPrev, toggleFullscreen])
+
+  const slide = SLIDES[current]
+  const SlideComponent = SLIDE_COMPONENTS[slide.id]
+
+  return (
+    <div className="fixed inset-0 z-50 bg-blanc-casse flex flex-col" style={{ marginLeft: isFullscreen ? 0 : undefined }}>
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gris-leger/30">
+        <div className="flex items-center gap-3">
+          <a href="/" className="text-gris-texte/30 hover:text-gris-texte transition-colors">
+            <X size={18} />
+          </a>
+          <span className="text-xs text-gris-texte/30">|</span>
+          {slide.category && (
+            <span className="text-xs font-semibold uppercase tracking-wider text-teal">{slide.category}</span>
+          )}
+          {slide.title && (
+            <>
+              <span className="text-xs text-gris-texte/20">·</span>
+              <span className="text-xs text-gris-texte/50">{slide.title}</span>
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-gris-texte/30 font-mono">
+            {current + 1} / {SLIDES.length}
+          </span>
+          <button
+            onClick={toggleFullscreen}
+            className="p-1.5 rounded-lg text-gris-texte/30 hover:text-gris-texte hover:bg-gris-leger/20 transition-colors"
+            title="Plein écran (F)"
+          >
+            <Maximize2 size={15} />
+          </button>
+        </div>
+      </div>
+
+      {/* Slide content */}
+      <div className="flex-1 relative overflow-hidden">
+        <SlideComponent />
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between px-6 py-3 bg-white border-t border-gris-leger/30">
+        <button
+          onClick={goPrev}
+          disabled={current === 0}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-gris-texte/50 hover:text-bleu-nuit hover:bg-gris-leger/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft size={16} />
+          Précédent
+        </button>
+
+        {/* Progress dots */}
+        <div className="flex items-center gap-1.5">
+          {SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`rounded-full transition-all ${
+                i === current
+                  ? 'w-6 h-2 bg-teal'
+                  : 'w-2 h-2 bg-gris-leger hover:bg-gris-texte/20'
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={goNext}
+          disabled={current === SLIDES.length - 1}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm text-gris-texte/50 hover:text-bleu-nuit hover:bg-gris-leger/20 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+        >
+          Suivant
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}

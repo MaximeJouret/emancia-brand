@@ -1,6 +1,7 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
 import { ColorSwatch } from '@/components/ColorSwatch'
+import { CommentsSection } from '@/components/CommentsSection'
 import type { ColorToken, NamedPalette } from '@/lib/brand'
 
 /** Generate tints (lighter) from a hex color */
@@ -363,6 +364,7 @@ export default function CouleursPage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="couleurs" />
     </>
   )
 }

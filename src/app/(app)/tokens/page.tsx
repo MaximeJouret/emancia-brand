@@ -1,5 +1,6 @@
 import { PageHeader } from '@/components/PageHeader'
 import { TokenExporter } from '@/components/TokenExporter'
+import { CommentsSection } from '@/components/CommentsSection'
 import { brand } from '@/lib/brand'
 
 export default function TokensPage() {
@@ -79,6 +80,7 @@ export default function TokensPage() {
           </table>
         </div>
       </section>
+      <CommentsSection pageSlug="tokens" />
     </>
   )
 }

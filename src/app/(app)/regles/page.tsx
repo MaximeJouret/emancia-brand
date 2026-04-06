@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 interface RuleItem {
   do: string
@@ -100,6 +101,7 @@ export default function ReglesPage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="regles" />
     </>
   )
 }

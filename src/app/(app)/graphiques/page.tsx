@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 const kpiData = [
   { label: 'Utilisateurs actifs', value: '12 450', change: '+18%', positive: true },
@@ -214,6 +215,7 @@ export default function GraphiquesPage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="graphiques" />
     </>
   )
 }

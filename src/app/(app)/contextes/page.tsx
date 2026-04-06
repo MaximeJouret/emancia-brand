@@ -1,6 +1,7 @@
 import { PageHeader } from '@/components/PageHeader'
 import { brand } from '@/lib/brand'
 import Image from 'next/image'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export default function ContextesPage() {
   return (
@@ -142,6 +143,7 @@ export default function ContextesPage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="contextes" />
     </>
   )
 }

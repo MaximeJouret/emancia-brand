@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export default function ComposantsPage() {
   return (
@@ -127,6 +128,7 @@ export default function ComposantsPage() {
           </table>
         </div>
       </section>
+      <CommentsSection pageSlug="composants" />
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 import {
   Heart, Users, GraduationCap, Shield,
   ArrowRight, ExternalLink, Download, Mail,
@@ -130,6 +131,7 @@ import { Heart, Users, TrendingUp } from 'lucide-react'
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="icones" />
     </>
   )
 }

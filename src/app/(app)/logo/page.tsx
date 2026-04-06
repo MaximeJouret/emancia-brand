@@ -1,6 +1,7 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
 import Image from 'next/image'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export default function LogoPage() {
   return (
@@ -136,6 +137,7 @@ export default function LogoPage() {
           ))}
         </div>
       </section>
+      <CommentsSection pageSlug="logo" />
     </>
   )
 }

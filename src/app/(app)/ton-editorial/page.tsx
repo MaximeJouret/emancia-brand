@@ -1,4 +1,5 @@
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 import { brand } from '@/lib/brand'
 
 const toneOfVoice = {
@@ -189,6 +190,7 @@ export default function TonEditorialPage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="ton-editorial" />
     </>
   )
 }

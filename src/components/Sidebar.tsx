@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { User, Lightbulb } from 'lucide-react'
+import { User, Lightbulb, Play } from 'lucide-react'
 
 interface NavItem {
   href: string
@@ -55,21 +55,16 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-teal text-white flex flex-col sidebar-scroll">
-      <div className="p-6 border-b border-white/15">
-        <Link href="/" className="flex items-center gap-3 group">
+      <div className="p-5 pb-4 border-b border-white/15">
+        <Link href="/" className="block group">
           <Image
-            src="/logos/logo-icon.svg"
+            src="/logos/logo-main.svg"
             alt="Emancia"
-            width={32}
-            height={32}
-            className="brightness-0 invert transition-transform group-hover:scale-105"
+            width={160}
+            height={40}
+            className="brightness-0 invert transition-transform group-hover:scale-[1.02]"
           />
-          <div>
-            <h1 className="font-display text-lg font-semibold text-white leading-tight">
-              Emancia
-            </h1>
-            <p className="text-[11px] text-white/70 leading-tight">Charte Graphique</p>
-          </div>
+          <p className="text-[11px] text-white/50 mt-1.5 ml-0.5">Charte Graphique</p>
         </Link>
       </div>
 
@@ -116,6 +111,17 @@ export function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-white/15 space-y-2">
+        <Link
+          href="/presentation"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            pathname === '/presentation'
+              ? 'bg-white text-teal shadow-sm'
+              : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white'
+          }`}
+        >
+          <Play size={14} />
+          Présentation
+        </Link>
         <Link
           href="/profil"
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${

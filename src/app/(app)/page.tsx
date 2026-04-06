@@ -1,5 +1,6 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export default function IdentitePage() {
   return (
@@ -69,6 +70,7 @@ export default function IdentitePage() {
           pour cette audience digitale native.
         </p>
       </section>
+      <CommentsSection pageSlug="identite" />
     </>
   )
 }

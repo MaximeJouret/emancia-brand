@@ -1,5 +1,6 @@
 import { brand } from '@/lib/brand'
 import { PageHeader } from '@/components/PageHeader'
+import { CommentsSection } from '@/components/CommentsSection'
 
 const hierarchy = [
   { level: 'H1', size: '40px', mobile: '28px', weight: 700, leading: '1.15', font: 'display' },
@@ -101,6 +102,7 @@ export default function TypographiePage() {
           </div>
         </div>
       </section>
+      <CommentsSection pageSlug="typographie" />
     </>
   )
 }

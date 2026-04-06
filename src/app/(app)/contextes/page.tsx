@@ -17,8 +17,7 @@ export default function ContextesPage() {
         <div className="rounded-xl overflow-hidden border border-gris-leger/30">
           <div className="bg-bleu-nuit px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Image src="/logos/logo-icon.svg" alt="Emancia" width={28} height={28} className="brightness-0 invert" />
-              <span className="font-display text-white font-semibold">Emancia</span>
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={120} height={30} className="brightness-0 invert" />
             </div>
             <div className="flex items-center gap-6">
               <span className="text-white/70 text-sm hover:text-white transition-colors">Apprendre</span>
@@ -37,12 +36,11 @@ export default function ContextesPage() {
           <div className="bg-teal px-8 py-6 text-center relative overflow-hidden">
             {/* Subtle background pattern */}
             <div className="absolute inset-0 opacity-[0.06] flex items-center justify-center">
-              <Image src="/logos/logo-icon.svg" alt="" width={200} height={200} className="brightness-0 invert" />
+              <Image src="/logos/logo-main.svg" alt="" width={240} height={60} className="brightness-0 invert" />
             </div>
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2.5 mb-2">
-                <Image src="/logos/logo-icon.svg" alt="Emancia" width={24} height={24} className="brightness-0 invert" />
-                <span className="font-display text-white font-semibold text-lg">Emancia</span>
+                <Image src="/logos/logo-main.svg" alt="Emancia" width={130} height={32} className="brightness-0 invert" />
               </div>
               <p className="text-white/80 text-sm">Éducation Financière</p>
             </div>
@@ -66,21 +64,21 @@ export default function ContextesPage() {
           {/* Circular */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-full bg-teal flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
-              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} className="brightness-0 invert" />
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} className="brightness-0 invert" />
             </div>
             <p className="text-xs text-gris-texte/60 mt-2">Circulaire</p>
           </div>
           {/* Square rounded */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-2xl bg-bleu-nuit flex items-center justify-center shadow-lg overflow-hidden">
-              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} className="brightness-0 invert" />
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} className="brightness-0 invert" />
             </div>
             <p className="text-xs text-gris-texte/60 mt-2">Carré arrondi</p>
           </div>
           {/* With background */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg overflow-hidden" style={{ backgroundColor: brand.colors.primary.blancCasse.hex }}>
-              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} />
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} />
             </div>
             <p className="text-xs text-gris-texte/60 mt-2">Fond clair</p>
           </div>
@@ -95,8 +93,7 @@ export default function ContextesPage() {
             <div className="grid grid-cols-3 gap-8 mb-8">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <Image src="/logos/logo-icon.svg" alt="Emancia" width={22} height={22} className="brightness-0 invert" />
-                  <span className="font-display text-white font-semibold">Emancia</span>
+                  <Image src="/logos/logo-main.svg" alt="Emancia" width={110} height={28} className="brightness-0 invert" />
                 </div>
                 <p className="text-white/50 text-xs leading-relaxed">{brand.tagline}</p>
               </div>
@@ -129,8 +126,8 @@ export default function ContextesPage() {
         <h2 className="text-xl font-semibold mb-4">Carte article</h2>
         <div className="max-w-sm">
           <div className="bg-white rounded-xl overflow-hidden border border-gris-leger/30 hover:shadow-lg transition-shadow">
-            <div className="h-40 bg-teal/10 flex items-center justify-center">
-              <Image src="/logos/logo-main.svg" alt="Emancia" width={160} height={40} className="opacity-20" />
+            <div className="h-40 bg-bleu-nuit flex items-center justify-center">
+              <Image src="/logos/logo-main.svg" alt="Emancia" width={160} height={40} className="brightness-0 invert opacity-30" />
             </div>
             <div className="p-5">
               <div className="flex items-center gap-2 mb-2">

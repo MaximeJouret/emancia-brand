@@ -26,6 +26,21 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
+function getLastSeenKey(slug: string) {
+  return `comments_last_seen_${slug}`
+}
+
+function getLastSeen(slug: string): number {
+  if (typeof window === 'undefined') return 0
+  const val = localStorage.getItem(getLastSeenKey(slug))
+  return val ? parseInt(val, 10) : 0
+}
+
+function markAsSeen(slug: string) {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(getLastSeenKey(slug), Date.now().toString())
+}
+
 export function CommentsSection({ pageSlug }: { pageSlug: string }) {
   const [comments, setComments] = useState<Comment[]>([])
   const [message, setMessage] = useState('')
@@ -35,6 +50,7 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [newCount, setNewCount] = useState(0)
 
   const fetchComments = useCallback(async () => {
     const supabase = createClient()
@@ -51,6 +67,9 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
       }
     } else {
       setComments(data || [])
+      const lastSeen = getLastSeen(pageSlug)
+      const newComments = (data || []).filter(c => new Date(c.created_at).getTime() > lastSeen)
+      setNewCount(newComments.length)
     }
   }, [pageSlug])
 
@@ -88,7 +107,9 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
     } else {
       setMessage('')
       setError('')
+      markAsSeen(pageSlug)
       await fetchComments()
+      setNewCount(0)
     }
     setLoading(false)
   }
@@ -106,10 +127,24 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
   return (
     <div className="mt-16 border-t border-gris-leger/30 pt-8">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const opening = !isOpen
+          setIsOpen(opening)
+          if (opening) {
+            markAsSeen(pageSlug)
+            setNewCount(0)
+          }
+        }}
         className="flex items-center gap-2.5 text-sm font-medium text-gris-texte/60 hover:text-bleu-nuit transition-colors group"
       >
-        <MessageSquare size={18} />
+        <div className="relative">
+          <MessageSquare size={18} />
+          {newCount > 0 && !isOpen && (
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-prune text-white text-[9px] font-bold flex items-center justify-center">
+              {newCount}
+            </span>
+          )}
+        </div>
         <span>Commentaires</span>
         {comments.length > 0 && (
           <span className="px-2 py-0.5 rounded-full bg-teal/10 text-teal text-xs font-semibold">

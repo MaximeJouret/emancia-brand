@@ -32,6 +32,16 @@ const SLIDES = [
     category: 'Couleurs',
   },
   {
+    id: 'couleurs-harmonie',
+    title: 'Harmonie chromatique',
+    category: 'Couleurs',
+  },
+  {
+    id: 'couleurs-valeurs',
+    title: 'Couleurs & Valeurs',
+    category: 'Couleurs',
+  },
+  {
     id: 'typographie',
     title: 'Typographie',
     category: 'Typographie',
@@ -163,18 +173,21 @@ function LogoSlide() {
 
 function CouleursSlide() {
   const colors = [
-    { name: 'Teal', hex: '#1A8F8A', role: 'Primaire' },
-    { name: 'Bleu Nuit', hex: '#1A2B3C', role: 'Fond sombre' },
-    { name: 'Blanc Cassé', hex: '#F2F5EE', role: 'Fond clair' },
-    { name: 'Prune', hex: '#7A4F6D', role: 'Accent' },
-    { name: 'Sauge', hex: '#A8C280', role: 'Accent' },
-    { name: 'Teal Clair', hex: '#88C9C7', role: 'Info' },
+    { name: 'Teal', hex: '#1A8F8A', role: 'Primaire', pct: '60%' },
+    { name: 'Prune Doux', hex: '#7A4F6D', role: 'Secondaire 1', pct: '20%' },
+    { name: 'Teal Clair', hex: '#88C9C7', role: 'Secondaire 2', pct: '10%' },
+    { name: 'Sauge', hex: '#A8C280', role: 'Support', pct: '5%' },
+    { name: 'Blanc Cassé', hex: '#F2F5EE', role: 'Fond clair', pct: '5%' },
+    { name: 'Bleu Nuit', hex: '#1A2B3C', role: 'Fond sombre', pct: '—' },
   ]
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-12 max-w-4xl mx-auto">
-      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-8">Palette de couleurs</p>
-      <div className="grid grid-cols-6 gap-4 w-full">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-6">Palette de couleurs</p>
+      <p className="text-sm text-gris-texte/50 mb-8 max-w-lg text-center">
+        6 couleurs structurées en hiérarchie : une principale, deux secondaires, et des couleurs de support.
+      </p>
+      <div className="grid grid-cols-6 gap-4 w-full mb-8">
         {colors.map((c) => (
           <div key={c.name} className="text-center">
             <div
@@ -184,6 +197,134 @@ function CouleursSlide() {
             <p className="text-sm font-semibold text-bleu-nuit">{c.name}</p>
             <p className="text-[11px] text-gris-texte/40 font-mono">{c.hex}</p>
             <p className="text-[10px] text-teal mt-0.5">{c.role}</p>
+          </div>
+        ))}
+      </div>
+      {/* Proportions bar */}
+      <div className="w-full max-w-lg">
+        <p className="text-[10px] text-gris-texte/30 uppercase tracking-wider mb-2 text-center">Proportions d&apos;usage recommandées</p>
+        <div className="flex h-3 rounded-full overflow-hidden">
+          <div className="bg-teal" style={{ width: '60%' }} />
+          <div style={{ width: '20%', backgroundColor: '#7A4F6D' }} />
+          <div style={{ width: '10%', backgroundColor: '#88C9C7' }} />
+          <div style={{ width: '5%', backgroundColor: '#A8C280' }} />
+          <div style={{ width: '5%', backgroundColor: '#F2F5EE', border: '1px solid #e0e0e0' }} />
+        </div>
+        <div className="flex justify-between mt-1.5 text-[9px] text-gris-texte/30 font-mono">
+          <span>60%</span>
+          <span>20%</span>
+          <span>10%</span>
+          <span>5%</span>
+          <span>5%</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CouleursHarmonieSlide() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-4xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-6">Harmonie chromatique</p>
+      <p className="text-sm text-gris-texte/50 mb-8 max-w-lg text-center">
+        La palette s&apos;articule selon une logique split-complémentaire créant un équilibre entre rigueur et chaleur.
+      </p>
+
+      <div className="grid grid-cols-2 gap-6 w-full mb-8">
+        {/* Harmony pair 1 */}
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#1A8F8A' }} />
+            <span className="text-lg font-bold text-gris-texte/20">+</span>
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#7A4F6D' }} />
+          </div>
+          <p className="text-sm font-semibold text-bleu-nuit mb-1">Teal + Prune Doux</p>
+          <p className="text-xs text-gris-texte/50 leading-relaxed">
+            Split-complémentaire. Contraste élégant entre raison (froid) et émotion (chaud). Porteur de sens : structure &amp; liberté.
+          </p>
+          <div className="mt-3 px-2 py-1 rounded-lg bg-success/10 text-success text-[10px] font-semibold inline-block">Excellent</div>
+        </div>
+
+        {/* Harmony pair 2 */}
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#1A8F8A' }} />
+            <span className="text-lg font-bold text-gris-texte/20">+</span>
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#88C9C7' }} />
+          </div>
+          <p className="text-sm font-semibold text-bleu-nuit mb-1">Teal + Teal Clair</p>
+          <p className="text-xs text-gris-texte/50 leading-relaxed">
+            Famille chromatique limpide. Crée profondeur et respiration sans rupture de code visuel.
+          </p>
+          <div className="mt-3 px-2 py-1 rounded-lg bg-success/10 text-success text-[10px] font-semibold inline-block">Excellent</div>
+        </div>
+
+        {/* Harmony pair 3 */}
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl border border-gris-leger/30" style={{ backgroundColor: '#F2F5EE' }} />
+            <span className="text-lg font-bold text-gris-texte/20">+</span>
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#1A8F8A' }} />
+          </div>
+          <p className="text-sm font-semibold text-bleu-nuit mb-1">Blanc Cassé + Teal</p>
+          <p className="text-xs text-gris-texte/50 leading-relaxed">
+            Ancrage idéal. La teinte verdâtre du blanc cassé harmonise subtilement avec le teal, évitant la froideur d&apos;un blanc pur.
+          </p>
+          <div className="mt-3 px-2 py-1 rounded-lg bg-success/10 text-success text-[10px] font-semibold inline-block">Excellent</div>
+        </div>
+
+        {/* Harmony pair 4 — vigilance */}
+        <div className="bg-white rounded-2xl border border-gris-leger/30 p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#A8C280' }} />
+            <span className="text-lg font-bold text-gris-texte/20">+</span>
+            <div className="w-10 h-10 rounded-xl" style={{ backgroundColor: '#7A4F6D' }} />
+          </div>
+          <p className="text-sm font-semibold text-bleu-nuit mb-1">Sauge + Prune</p>
+          <p className="text-xs text-gris-texte/50 leading-relaxed">
+            Combinaison à surveiller. Saturations proches pouvant créer une vibration visuelle. Toujours séparer par du blanc ou du teal.
+          </p>
+          <div className="mt-3 px-2 py-1 rounded-lg bg-warning/10 text-warning text-[10px] font-semibold inline-block">Vigilance</div>
+        </div>
+      </div>
+
+      <p className="text-[10px] text-gris-texte/30 text-center">
+        Audit basé sur l&apos;analyse WCAG AA et la théorie split-complémentaire
+      </p>
+    </div>
+  )
+}
+
+function CouleursValeursSlide() {
+  const mappings = [
+    { valeur: 'Rigueur & Qualité', color: '#1A2B3C', colorName: 'Bleu Nuit', why: 'Autorité, sérieux intellectuel, stabilité — institutions financières' },
+    { valeur: 'Transparence', color: '#1A8F8A', colorName: 'Teal', why: 'Confiance, clarté, ouverture, dialogue, invitation' },
+    { valeur: 'Émancipation', color: '#7A4F6D', colorName: 'Prune Doux', why: 'Empowerment, transformation personnelle, sagesse, chaleur' },
+    { valeur: 'Authenticité', color: '#A8C280', colorName: 'Sauge', why: 'Naturel, croissance organique, sincérité, pas de faux-semblants' },
+  ]
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-12 max-w-4xl mx-auto">
+      <p className="text-sm font-semibold uppercase tracking-widest text-teal mb-6">Couleurs &amp; Valeurs</p>
+      <p className="text-sm text-gris-texte/50 mb-8 max-w-lg text-center">
+        Chaque couleur incarne une valeur fondatrice. Ce n&apos;est pas un choix esthétique — c&apos;est un choix de sens.
+      </p>
+
+      <div className="w-full space-y-3">
+        {mappings.map((m) => (
+          <div key={m.valeur} className="flex items-stretch gap-0 bg-white rounded-2xl border border-gris-leger/30 overflow-hidden">
+            {/* Color band */}
+            <div className="w-2 shrink-0" style={{ backgroundColor: m.color }} />
+            <div className="flex items-center gap-5 px-6 py-4 flex-1">
+              <div className="w-12 h-12 rounded-xl shrink-0" style={{ backgroundColor: m.color }} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-0.5">
+                  <h3 className="font-display text-base font-semibold" style={{ color: m.color }}>{m.valeur}</h3>
+                  <span className="text-[10px] font-mono text-gris-texte/30">{m.colorName}</span>
+                </div>
+                <p className="text-xs text-gris-texte/50">{m.why}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -339,6 +480,8 @@ const SLIDE_COMPONENTS: Record<string, React.FC> = {
   valeurs: ValeursSlide,
   logo: LogoSlide,
   couleurs: CouleursSlide,
+  'couleurs-harmonie': CouleursHarmonieSlide,
+  'couleurs-valeurs': CouleursValeursSlide,
   typographie: TypographieSlide,
   ton: TonSlide,
   regles: ReglesSlide,

@@ -302,6 +302,61 @@ export default function LogoPage() {
         </div>
       </section>
 
+      {/* ── Usages proscrits ── */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-2">Usages proscrits</h2>
+        <p className="text-sm text-bleu-nuit/70 mb-6 leading-relaxed">
+          Voici les transformations graphiques interdites pour préserver l&apos;intégrité de l&apos;identité visuelle Emancia.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Each card shows a prohibited usage */}
+          {[
+            { label: 'Déformation', description: 'Ne jamais étirer ou compresser le logo', transform: 'scaleX(1.4)' },
+            { label: 'Changement de couleurs', description: 'Ne jamais modifier les couleurs du logo', filter: 'hue-rotate(90deg)' },
+            { label: 'Modification des échelles', description: 'Ne jamais modifier les proportions entre le symbole et le texte', transform: 'scale(0.6)' },
+            { label: 'Aplatissement', description: 'Ne jamais aplatir ou allonger le logo', transform: 'scaleY(0.6)' },
+            { label: 'Ajout d\'ombrages', description: 'Ne jamais ajouter d\'ombre portée ou de glow', filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.5))' },
+            { label: 'Contourer', description: 'Ne jamais ajouter de contour autour du logo', style: 'outline' },
+          ].map((item) => (
+            <div key={item.label} className="bg-white rounded-lg border border-gris-leger overflow-hidden">
+              <div className="bg-error/5 px-4 py-2">
+                <span className="text-xs font-semibold text-error uppercase tracking-wider">{item.label}</span>
+              </div>
+              <div className="p-6 flex items-center justify-center min-h-[120px] bg-blanc-casse/50 relative">
+                {/* Red cross overlay */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                  <div className="w-16 h-16 rounded-full border-4 border-error/30 flex items-center justify-center">
+                    <div className="w-12 h-0.5 bg-error/40 rotate-45 absolute" />
+                  </div>
+                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logos/logo-main.svg"
+                  alt={`Interdit : ${item.label}`}
+                  className="h-12 w-auto relative z-10"
+                  style={{
+                    transform: item.transform || 'none',
+                    filter: item.filter || 'none',
+                    ...(item.style === 'outline' ? {
+                      filter: 'drop-shadow(0 0 0 transparent)',
+                      WebkitTextStroke: '2px #1A8F8A',
+                      opacity: 0.6,
+                      outline: '2px solid #1A8F8A',
+                      outlineOffset: '4px',
+                      borderRadius: '4px',
+                    } : {}),
+                  }}
+                />
+              </div>
+              <div className="px-4 py-3 border-t border-gris-leger/30">
+                <p className="text-xs text-bleu-nuit/60">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-6 text-error">Usages interdits</h2>
         <div className="grid grid-cols-2 gap-4">

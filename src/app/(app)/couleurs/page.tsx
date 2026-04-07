@@ -216,6 +216,60 @@ function SectionHeading({
   )
 }
 
+function interpolateColor(hex1: string, hex2: string, steps: number): string[] {
+  const r1 = parseInt(hex1.slice(1, 3), 16)
+  const g1 = parseInt(hex1.slice(3, 5), 16)
+  const b1 = parseInt(hex1.slice(5, 7), 16)
+  const r2 = parseInt(hex2.slice(1, 3), 16)
+  const g2 = parseInt(hex2.slice(3, 5), 16)
+  const b2 = parseInt(hex2.slice(5, 7), 16)
+
+  return Array.from({ length: steps }, (_, i) => {
+    const t = i / (steps - 1)
+    const r = Math.round(r1 + (r2 - r1) * t)
+    const g = Math.round(g1 + (g2 - g1) * t)
+    const b = Math.round(b1 + (b2 - b1) * t)
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  })
+}
+
+function ColorGradientCircles({ fromHex, toHex, fromName, toName, label }: { fromHex: string; toHex: string; fromName: string; toName: string; label?: string }) {
+  const steps = interpolateColor(fromHex, toHex, 10)
+  const fromRgb = `${parseInt(fromHex.slice(1,3),16)} ; ${parseInt(fromHex.slice(3,5),16)} ; ${parseInt(fromHex.slice(5,7),16)}`
+
+  return (
+    <div className="rounded-lg border border-[#2A4A5C]/15 shadow-sm bg-white overflow-hidden p-8">
+      {label && (
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-4">{label}</p>
+      )}
+      <div className="flex items-center gap-8">
+        <div className="shrink-0 text-right min-w-[140px]">
+          <p className="font-mono text-sm font-semibold text-bleu-nuit">{fromHex}</p>
+          <p className="text-xs text-bleu-nuit/50 mt-1">RVB : {fromRgb}</p>
+        </div>
+        <div className="flex items-center">
+          {steps.map((color, i) => (
+            <div
+              key={i}
+              className="w-16 h-16 rounded-full shrink-0"
+              style={{
+                backgroundColor: color,
+                marginLeft: i === 0 ? 0 : '-12px',
+                zIndex: 10 - i,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        <span className="text-sm font-display font-semibold text-bleu-nuit">{fromName}</span>
+        <ArrowRight size={14} className="text-bleu-nuit/30" />
+        <span className="text-sm font-display font-semibold text-bleu-nuit">{toName}</span>
+      </div>
+    </div>
+  )
+}
+
 /* ─────────────────────────────────────────────
    Main page
    ───────────────────────────────────────────── */
@@ -292,65 +346,58 @@ export default function CouleursPage() {
 
         <div className="space-y-6">
           {/* Teal → Teal Clair */}
-          <div className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
-            <div className="flex items-center gap-6 p-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#1A8F8A' }} />
-                  <ArrowRight size={16} className="text-bleu-nuit/20" />
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#88C9C7' }} />
-                </div>
-                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Teal → Teal Clair</p>
-                <p className="text-xs text-bleu-nuit/60">Le teal principal (#1A8F8A) est utilisé pour les éléments d'action et d'accentuation. Sa déclinaison claire (#88C9C7) sert pour les fonds de section, badges et hover states — créant une cohérence sans monotonie.</p>
-              </div>
-              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0" style={{ background: 'linear-gradient(to right, #1A8F8A, #88C9C7)' }} />
-            </div>
-            <div className="h-3 w-full" style={{ background: 'linear-gradient(to right, #1A8F8A 0%, #3BA9A5 25%, #51B9B5 50%, #6EC1BE 75%, #88C9C7 100%)' }} />
-          </div>
+          <ColorGradientCircles
+            fromHex="#1A8F8A"
+            toHex="#88C9C7"
+            fromName="Teal"
+            toName="Teal Clair"
+            label="Principale"
+          />
 
           {/* Bleu Nuit → Bleu Nuit Clair */}
-          <div className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
-            <div className="flex items-center gap-6 p-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#1A2B3C' }} />
-                  <ArrowRight size={16} className="text-bleu-nuit/20" />
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#2A4A5C' }} />
-                </div>
-                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Bleu Nuit → Bleu Nuit Clair</p>
-                <p className="text-xs text-bleu-nuit/60">Le bleu nuit principal (#1A2B3C) domine le texte et les zones sombres. Sa déclinaison claire (#2A4A5C) est réservée aux bordures et délimitations subtiles — structurant l'interface sans l'alourdir.</p>
-              </div>
-              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0" style={{ background: 'linear-gradient(to right, #1A2B3C, #2A4A5C)' }} />
-            </div>
-            <div className="h-3 w-full" style={{ background: 'linear-gradient(to right, #1A2B3C 0%, #1E3345, #223B4E, #264257, #2A4A5C 100%)' }} />
-          </div>
+          <ColorGradientCircles
+            fromHex="#1A2B3C"
+            toHex="#2A4A5C"
+            fromName="Bleu Nuit"
+            toName="Bleu Nuit Clair"
+            label="Principale"
+          />
 
-          {/* Sauge standalone */}
-          <div className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
-            <div className="flex items-center gap-6 p-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#A8C280' }} />
-                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#7A4F6D' }} />
+          {/* Prune variations */}
+          <ColorGradientCircles
+            fromHex="#7A4F6D"
+            toHex="#B88AA8"
+            fromName="Prune"
+            toName="Prune Clair"
+            label="Secondaires"
+          />
+
+          {/* Sauge & Prune — couleurs indépendantes */}
+          <div className="rounded-lg border border-[#2A4A5C]/15 shadow-sm bg-white overflow-hidden p-8">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-4">Secondaires</p>
+            <div className="flex items-center gap-6 mb-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full shrink-0" style={{ backgroundColor: '#A8C280' }} />
+                <div>
+                  <p className="font-display text-sm font-semibold text-bleu-nuit">Sauge</p>
+                  <p className="font-mono text-xs text-bleu-nuit/50">#A8C280</p>
                 </div>
-                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Sauge & Prune — couleurs indépendantes</p>
-                <p className="text-xs text-bleu-nuit/60">La sauge (#A8C280) et le prune (#7A4F6D) ne sont pas des déclinaisons l'une de l'autre. Elles apportent chacune une dimension unique à la palette : la sauge pour la douceur naturelle, le prune pour l'émancipation.</p>
               </div>
-              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0 grid grid-cols-2 gap-0">
-                <div style={{ backgroundColor: '#A8C280' }} />
-                <div style={{ backgroundColor: '#7A4F6D' }} />
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full shrink-0" style={{ backgroundColor: '#7A4F6D' }} />
+                <div>
+                  <p className="font-display text-sm font-semibold text-bleu-nuit">Prune</p>
+                  <p className="font-mono text-xs text-bleu-nuit/50">#7A4F6D</p>
+                </div>
               </div>
             </div>
-            <div className="h-3 w-full grid grid-cols-2">
-              <div style={{ backgroundColor: '#A8C280' }} />
-              <div style={{ backgroundColor: '#7A4F6D' }} />
-            </div>
+            <p className="text-xs text-bleu-nuit/60 leading-relaxed">La sauge et le prune ne sont pas des déclinaisons l&apos;une de l&apos;autre. Elles apportent chacune une dimension unique : la sauge pour la douceur naturelle, le prune pour l&apos;émancipation.</p>
           </div>
         </div>
 
         <div className="mt-6 p-4 bg-teal/5 rounded-xl border border-teal/10">
           <p className="text-xs text-bleu-nuit/70 leading-relaxed">
-            <strong className="text-bleu-nuit">Règle importante :</strong> Les dégradés ne sont utilisés que dans la documentation de la marque pour illustrer les relations entre couleurs. Dans l'interface réelle, chaque couleur est utilisée en aplat — pas de dégradés dans les composants UI.
+            <strong className="text-bleu-nuit">Règle importante :</strong> Les dégradés ne sont utilisés que dans la documentation de la marque pour illustrer les relations entre couleurs. Dans l&apos;interface réelle, chaque couleur est utilisée en aplat — pas de dégradés dans les composants UI.
           </p>
         </div>
       </section>

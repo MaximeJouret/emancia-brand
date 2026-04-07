@@ -10,6 +10,7 @@ import {
   Moon,
   AlertTriangle,
   Layers,
+  ArrowRight,
   BookOpen,
   Sparkles,
   PieChart,
@@ -281,6 +282,79 @@ export default function CouleursPage() {
         </div>
       </section>
 
+      {/* ── Déclinaisons & dégradés ── */}
+      <section className="mb-16">
+        <SectionHeading
+          icon={ArrowRight}
+          title="Déclinaisons & dégradés"
+          subtitle="Chaque couleur primaire possède une déclinaison plus claire utilisée comme couleur secondaire. Ces paires créent de la profondeur dans l'interface."
+        />
+
+        <div className="space-y-6">
+          {/* Teal → Teal Clair */}
+          <div className="rounded-2xl overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
+            <div className="flex items-center gap-6 p-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#1A8F8A' }} />
+                  <ArrowRight size={16} className="text-bleu-nuit/20" />
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#88C9C7' }} />
+                </div>
+                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Teal → Teal Clair</p>
+                <p className="text-xs text-bleu-nuit/60">Le teal principal (#1A8F8A) est utilisé pour les éléments d'action et d'accentuation. Sa déclinaison claire (#88C9C7) sert pour les fonds de section, badges et hover states — créant une cohérence sans monotonie.</p>
+              </div>
+              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0" style={{ background: 'linear-gradient(to right, #1A8F8A, #88C9C7)' }} />
+            </div>
+            <div className="h-3 w-full" style={{ background: 'linear-gradient(to right, #1A8F8A 0%, #3BA9A5 25%, #51B9B5 50%, #6EC1BE 75%, #88C9C7 100%)' }} />
+          </div>
+
+          {/* Bleu Nuit → Bleu Nuit Clair */}
+          <div className="rounded-2xl overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
+            <div className="flex items-center gap-6 p-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#1A2B3C' }} />
+                  <ArrowRight size={16} className="text-bleu-nuit/20" />
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#2A4A5C' }} />
+                </div>
+                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Bleu Nuit → Bleu Nuit Clair</p>
+                <p className="text-xs text-bleu-nuit/60">Le bleu nuit principal (#1A2B3C) domine le texte et les zones sombres. Sa déclinaison claire (#2A4A5C) est réservée aux bordures et délimitations subtiles — structurant l'interface sans l'alourdir.</p>
+              </div>
+              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0" style={{ background: 'linear-gradient(to right, #1A2B3C, #2A4A5C)' }} />
+            </div>
+            <div className="h-3 w-full" style={{ background: 'linear-gradient(to right, #1A2B3C 0%, #1E3345, #223B4E, #264257, #2A4A5C 100%)' }} />
+          </div>
+
+          {/* Sauge standalone */}
+          <div className="rounded-2xl overflow-hidden border border-[#2A4A5C]/15 shadow-sm bg-white">
+            <div className="flex items-center gap-6 p-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#A8C280' }} />
+                  <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: '#7A4F6D' }} />
+                </div>
+                <p className="font-display text-base font-semibold text-bleu-nuit mb-1">Sauge & Prune — couleurs indépendantes</p>
+                <p className="text-xs text-bleu-nuit/60">La sauge (#A8C280) et le prune (#7A4F6D) ne sont pas des déclinaisons l'une de l'autre. Elles apportent chacune une dimension unique à la palette : la sauge pour la douceur naturelle, le prune pour l'émancipation.</p>
+              </div>
+              <div className="w-48 h-16 rounded-xl overflow-hidden shrink-0 grid grid-cols-2 gap-0">
+                <div style={{ backgroundColor: '#A8C280' }} />
+                <div style={{ backgroundColor: '#7A4F6D' }} />
+              </div>
+            </div>
+            <div className="h-3 w-full grid grid-cols-2">
+              <div style={{ backgroundColor: '#A8C280' }} />
+              <div style={{ backgroundColor: '#7A4F6D' }} />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 p-4 bg-teal/5 rounded-xl border border-teal/10">
+          <p className="text-xs text-bleu-nuit/70 leading-relaxed">
+            <strong className="text-bleu-nuit">Règle importante :</strong> Les dégradés ne sont utilisés que dans la documentation de la marque pour illustrer les relations entre couleurs. Dans l'interface réelle, chaque couleur est utilisée en aplat — pas de dégradés dans les composants UI.
+          </p>
+        </div>
+      </section>
+
       {/* ── Mode sombre ── */}
       <section className="mb-16">
         <SectionHeading
@@ -331,7 +405,7 @@ export default function CouleursPage() {
                 className="h-20 flex items-end p-4"
                 style={{ backgroundColor: c.hex }}
               >
-                <span className="text-white font-display font-semibold text-sm">{c.name}</span>
+                <span className="font-display font-semibold text-sm" style={{ color: isLightColor(c.hex) ? '#1A2B3C' : '#FFFFFF' }}>{c.name}</span>
               </div>
               <div className="bg-white p-4">
                 <p className="text-xs text-bleu-nuit/70 leading-relaxed">{c.usage}</p>

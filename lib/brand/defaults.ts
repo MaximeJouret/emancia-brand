@@ -39,6 +39,11 @@ export const brand: BrandKit = {
         name: 'Gris texte',
         usage: 'Texte courant, paragraphes',
       },
+      bleuNuitClair: {
+        hex: '#2A4A5C',
+        name: 'Bleu nuit clair',
+        usage: 'Bordures, délimitations subtiles, éléments secondaires',
+      },
       sauge: {
         hex: '#A8C280',
         name: 'Sauge',
@@ -47,7 +52,7 @@ export const brand: BrandKit = {
     },
     functional: {
       success: {
-        hex: '#4CAF82',
+        hex: '#5A8A4A',
         name: 'Succès',
         usage: 'Messages de succès, validations, indicateurs positifs',
       },
@@ -69,19 +74,19 @@ export const brand: BrandKit = {
     },
     darkMode: {
       background: {
-        hex: '#121212',
+        hex: '#0F1A24',
         name: 'Fond sombre',
-        usage: 'Fond principal en mode sombre',
+        usage: 'Fond principal en mode sombre — bleu nuit profond',
       },
       surface: {
-        hex: '#1E1E1E',
+        hex: '#162535',
         name: 'Surface sombre',
-        usage: 'Cartes et conteneurs en mode sombre',
+        usage: 'Cartes et conteneurs en mode sombre — bleu nuit éclairci',
       },
       tealLight: {
-        hex: '#3DD4CC',
+        hex: '#88C9C7',
         name: 'Teal clair',
-        usage: 'Couleur principale adaptée au mode sombre',
+        usage: 'Couleur principale adaptée au mode sombre — déclinaison du teal existant',
       },
       textPrimary: {
         hex: '#E4E4E4',
@@ -110,9 +115,9 @@ export const brand: BrandKit = {
           sauge: { hex: '#A8C280', name: 'Sauge', usage: 'Illustrations, décorations, fonds secondaires' },
         },
         darkMode: {
-          background: { hex: '#121212', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
-          surface: { hex: '#1E1E1E', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
-          accent: { hex: '#3DD4CC', name: 'Teal clair', usage: 'Couleur principale adaptée au mode sombre' },
+          background: { hex: '#0F1A24', name: 'Fond sombre', usage: 'Fond principal en mode sombre' },
+          surface: { hex: '#162535', name: 'Surface sombre', usage: 'Cartes et conteneurs en mode sombre' },
+          accent: { hex: '#88C9C7', name: 'Teal clair', usage: 'Couleur principale adaptée au mode sombre' },
           textPrimary: { hex: '#E4E4E4', name: 'Texte clair', usage: 'Texte principal en mode sombre' },
         },
       },

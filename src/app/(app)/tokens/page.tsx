@@ -37,7 +37,7 @@ export default function TokensPage() {
                     </div>
                   </td>
                   <td className="py-3 pr-4 font-mono text-xs">{token.hex}</td>
-                  <td className="py-3 text-xs text-gris-texte/80">{token.usage}</td>
+                  <td className="py-3 text-xs text-bleu-nuit/80">{token.usage}</td>
                 </tr>
               ))}
               {Object.entries(brand.colors.secondary).map(([key, token]) => (
@@ -49,7 +49,7 @@ export default function TokensPage() {
                     </div>
                   </td>
                   <td className="py-3 pr-4 font-mono text-xs">{token.hex}</td>
-                  <td className="py-3 text-xs text-gris-texte/80">{token.usage}</td>
+                  <td className="py-3 text-xs text-bleu-nuit/80">{token.usage}</td>
                 </tr>
               ))}
               {Object.entries(brand.colors.functional).map(([key, token]) => (
@@ -61,7 +61,7 @@ export default function TokensPage() {
                     </div>
                   </td>
                   <td className="py-3 pr-4 font-mono text-xs">{token.hex}</td>
-                  <td className="py-3 text-xs text-gris-texte/80">{token.usage}</td>
+                  <td className="py-3 text-xs text-bleu-nuit/80">{token.usage}</td>
                 </tr>
               ))}
               {Object.entries(brand.borderRadius).map(([key, value]) => (
@@ -73,7 +73,7 @@ export default function TokensPage() {
                     </div>
                   </td>
                   <td className="py-3 pr-4 font-mono text-xs">{value}</td>
-                  <td className="py-3 text-xs text-gris-texte/80">Border radius {key}</td>
+                  <td className="py-3 text-xs text-bleu-nuit/80">Border radius {key}</td>
                 </tr>
               ))}
             </tbody>

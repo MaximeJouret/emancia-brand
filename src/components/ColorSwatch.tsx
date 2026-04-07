@@ -37,8 +37,8 @@ export function ColorSwatch({ token }: { token: ColorToken }) {
         </div>
       </div>
       <p className="font-medium text-sm">{token.name}</p>
-      <p className="font-mono text-xs text-gris-texte/60 mt-0.5">{token.hex}</p>
-      <p className="text-xs text-gris-texte/80 mt-1">{token.usage}</p>
+      <p className="font-mono text-xs text-bleu-nuit/60 mt-0.5">{token.hex}</p>
+      <p className="text-xs text-bleu-nuit/80 mt-1">{token.usage}</p>
     </div>
   )
 }

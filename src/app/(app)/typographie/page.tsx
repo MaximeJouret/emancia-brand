@@ -18,7 +18,7 @@ function FontCard({ role, spec }: { role: string; spec: typeof brand.typography.
     <div className="bg-white rounded-xl p-8 border border-gris-leger mb-6">
       <div className="flex items-baseline justify-between mb-4">
         <h3 className="text-lg font-semibold">{role}</h3>
-        <span className="text-xs font-mono text-gris-texte/60">
+        <span className="text-xs font-mono text-bleu-nuit/60">
           {spec.weights.join(' · ')}
         </span>
       </div>
@@ -34,7 +34,7 @@ function FontCard({ role, spec }: { role: string; spec: typeof brand.typography.
       >
         Aa Bb Cc Dd Ee Ff Gg 0123456789 €$%
       </p>
-      <p className="text-sm text-gris-texte/80">{spec.role}</p>
+      <p className="text-sm text-bleu-nuit/60">{spec.role}</p>
     </div>
   )
 }
@@ -90,13 +90,13 @@ export default function TypographiePage() {
           <h3 className="font-display text-3xl font-bold text-bleu-nuit">
             Comprendre l'inflation en 5 minutes
           </h3>
-          <p className="text-gris-texte leading-relaxed">
+          <p className="text-bleu-nuit/70 leading-relaxed">
             L'inflation est la hausse générale des prix dans une économie. Quand le taux
             d'inflation augmente, votre pouvoir d'achat diminue — autrement dit, votre argent
             achète moins de choses qu'avant.
           </p>
-          <div className="bg-teal-clair rounded-lg p-4">
-            <p className="font-mono text-sm text-teal-dark">
+          <div className="bg-teal-clair/20 border border-teal/10 rounded-lg p-4">
+            <p className="font-mono text-sm text-bleu-nuit">
               Taux d'inflation annuel : <strong>3,2 %</strong> — Indice des prix : <strong>112,4</strong>
             </p>
           </div>

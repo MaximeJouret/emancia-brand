@@ -22,11 +22,11 @@ const PROMPT_TEMPLATE = `Tu es un expert en design de marque et développement w
 ## IDENTITÉ VISUELLE
 
 ### Couleurs
-- **Couleur primaire principale** (hex) : [EX: #1A8F8A]
-- **Couleur primaire secondaire / fond sombre** (hex) : [EX: #1A2B3C]
-- **Couleur de fond claire** (hex) : [EX: #F2F5EE]
-- **Couleurs secondaires** (2-3 hex) : [EX: #7A4F6D, #A8C280, #88C9C7]
-- **Couleurs fonctionnelles** : succès [HEX], erreur [HEX], warning [HEX]
+- **Primaires (3)** : couleur principale [EX: #1A8F8A], fond sombre [EX: #1A2B3C], fond clair [EX: #F2F5EE]
+- **Secondaires (3-4)** : accents [EX: #7A4F6D, #A8C280, #88C9C7, #2A4A5C]
+- **Couleurs fonctionnelles** : succès [EX: #5A8A4A], erreur [EX: #E05252], warning [EX: #F0A500]
+- **Mode sombre** : fond [EX: #0F1A24], surface [EX: #162535], accent [EX: #88C9C7] — jamais de noir pur
+- **Proportions** : 60% fond / 20% texte / 10% accents / 5% CTA / 5% déco
 
 ### Typographie
 - **Police display / titres** : [EX: Fraunces]
@@ -80,11 +80,13 @@ Créer un projet Next.js (App Router) avec :
 12. **Formes** (\`/formes\`) — Playground interactif pour tester radius et couleurs
 13. **Idées de contenus** (\`/idees-contenus\`) — CRUD collaboratif avec vue **Kanban (Board)** et vue **Liste** :
     - Proposer des idées par plateforme (Instagram, YouTube, LinkedIn, TikTok, X)
+    - **Multi-sélection plateformes et types de contenu** : chips toggle au lieu de select simple
     - 4 colonnes de statut : Idée → Validé → En cours → Publié
     - **Drag & drop** : glisser les cartes entre colonnes pour changer le statut (HTML5 Drag API, mise à jour optimiste en base)
+    - **Calendrier milestone** en dessous du kanban : vue par semaine (4 semaines), drag & drop des idées validées sur des dates pour planifier le tournage
     - Toggle Board / Liste en haut à droite
     - Barre de stats avec compteurs par statut
-    - Filtre par plateforme
+    - Filtre multi-plateforme (chips toggle, opérateur overlap)
     - Champ lien optionnel + détection auto des URLs dans la description (composant Linkify)
     - Chaque membre peut modifier/supprimer ses propres idées uniquement
     - Formulaire modal pour création/édition
@@ -133,11 +135,14 @@ CREATE TABLE content_ideas (
   user_email TEXT NOT NULL,
   user_name TEXT,
   platform TEXT NOT NULL,
+  platforms TEXT[] DEFAULT '{}',
   content_type TEXT NOT NULL,
+  content_types TEXT[] DEFAULT '{}',
   title TEXT NOT NULL,
   description TEXT DEFAULT '',
   link TEXT,
   status TEXT DEFAULT 'idee',
+  scheduled_date DATE,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -164,11 +169,11 @@ CREATE POLICY "Suppression par le propriétaire"
 
 ## RÈGLES DE DESIGN
 
-1. **Coins arrondis** : \`rounded-xl\` (12px) pour les cartes, \`rounded-lg\` (8px) pour les inputs/boutons
-2. **Bordures** : \`border border-gris-leger/30\` sur les cartes blanches
+1. **Coins arrondis** : \`rounded-lg\` (8px) max standard pour les cartes et inputs. \`rounded-xl\` (12px+) uniquement en exception rare. \`rounded-full\` réservé aux pills/avatars
+2. **Bordures** : \`border border-[#2A4A5C]/15\` (bleu nuit clair) sur les cartes et swatches
 3. **Ombres** : Minimales, utiliser les bordures pour la structure
 4. **Espacement** : Sections séparées par \`mb-12\`, éléments internes par \`gap-4\`
-5. **Texte secondaire** : Toujours \`text-gris-texte/60\` ou \`/70\`
+5. **Texte secondaire** : Toujours \`text-bleu-nuit/60\` ou \`/70\` — jamais de gris pur
 6. **Données numériques** : Toujours en \`font-mono\`
 7. **Bouton principal** : \`bg-[primaire] text-white rounded-lg hover:bg-[primaire-dark]\`
 8. **Glassmorphism** (login) : \`bg-white/[0.07] backdrop-blur-xl border border-white/10\`
@@ -226,14 +231,14 @@ export function PromptTemplate() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-bleu-nuit">Prompt Template</p>
-          <p className="text-xs text-gris-texte/50 mt-0.5">
+          <p className="text-xs text-bleu-nuit/50 mt-0.5">
             Prompt pour recréer ce site de charte graphique de A à Z, adaptable à tout business
           </p>
         </div>
         {isOpen ? (
-          <ChevronUp size={18} className="text-gris-texte/40 shrink-0" />
+          <ChevronUp size={18} className="text-bleu-nuit/40 shrink-0" />
         ) : (
-          <ChevronDown size={18} className="text-gris-texte/40 shrink-0" />
+          <ChevronDown size={18} className="text-bleu-nuit/40 shrink-0" />
         )}
       </button>
 
@@ -241,7 +246,7 @@ export function PromptTemplate() {
         <div className="mt-3 rounded-xl border border-gris-leger/30 overflow-hidden">
           {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-2.5 bg-blanc-casse border-b border-gris-leger/30">
-            <span className="text-xs text-gris-texte/50 font-medium">
+            <span className="text-xs text-bleu-nuit/50 font-medium">
               {PROMPT_TEMPLATE.split('\n').length} lignes — Remplis les champs [ENTRE CROCHETS] avec tes infos
             </span>
             <button
@@ -259,7 +264,7 @@ export function PromptTemplate() {
 
           {/* Content */}
           <div className="max-h-[500px] overflow-y-auto bg-white">
-            <pre className="p-5 text-xs leading-relaxed text-gris-texte/80 whitespace-pre-wrap font-mono">
+            <pre className="p-5 text-xs leading-relaxed text-bleu-nuit/80 whitespace-pre-wrap font-mono">
               {PROMPT_TEMPLATE}
             </pre>
           </div>

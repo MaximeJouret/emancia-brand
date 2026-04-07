@@ -85,13 +85,13 @@ export default function IconesPage() {
         <section key={group.label} className="mb-12">
           <div className="mb-4">
             <h2 className="text-xl font-semibold">{group.label}</h2>
-            <p className="text-sm text-gris-texte/70">{group.description}</p>
+            <p className="text-sm text-bleu-nuit/70">{group.description}</p>
           </div>
           <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
             {group.icons.map(({ name, Icon, color }) => (
               <div key={name} className="flex flex-col items-center gap-2 rounded-xl bg-white p-4 border border-gris-leger/30 hover:shadow-md transition-shadow">
                 <Icon size={28} style={{ color }} strokeWidth={1.5} />
-                <span className="text-center text-xs text-gris-texte/70">{name}</span>
+                <span className="text-center text-xs text-bleu-nuit/70">{name}</span>
               </div>
             ))}
           </div>
@@ -119,15 +119,15 @@ import { Heart, Users, TrendingUp } from 'lucide-react'
         <div className="space-y-3">
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Épaisseur du trait</h3>
-            <p className="text-sm text-gris-texte/80">Toujours utiliser <code className="font-mono text-teal bg-teal/5 px-1 rounded">strokeWidth={'{1.5}'}</code> pour une apparence fine et élégante.</p>
+            <p className="text-sm text-bleu-nuit/80">Toujours utiliser <code className="font-mono text-teal bg-teal/5 px-1 rounded">strokeWidth={'{1.5}'}</code> pour une apparence fine et élégante.</p>
           </div>
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Tailles recommandées</h3>
-            <p className="text-sm text-gris-texte/80">16px (inline), 20px (boutons), 24px (navigation), 28-32px (héros). Ne pas dépasser 48px.</p>
+            <p className="text-sm text-bleu-nuit/80">16px (inline), 20px (boutons), 24px (navigation), 28-32px (héros). Ne pas dépasser 48px.</p>
           </div>
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Couleurs</h3>
-            <p className="text-sm text-gris-texte/80">Utiliser uniquement les couleurs de la charte. Les icônes fonctionnelles utilisent les couleurs fonctionnelles (succès, erreur, etc.).</p>
+            <p className="text-sm text-bleu-nuit/80">Utiliser uniquement les couleurs de la charte. Les icônes fonctionnelles utilisent les couleurs fonctionnelles (succès, erreur, etc.).</p>
           </div>
         </div>
       </section>

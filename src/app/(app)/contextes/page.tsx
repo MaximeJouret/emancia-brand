@@ -36,18 +36,18 @@ export default function ContextesPage() {
           <div className="bg-teal px-8 py-6 text-center relative overflow-hidden">
             {/* Subtle background pattern */}
             <div className="absolute inset-0 opacity-[0.06] flex items-center justify-center">
-              <Image src="/logos/logo-main.svg" alt="" width={240} height={60} className="brightness-0 invert" />
+              <Image src="/logos/logo-baseline.svg" alt="" width={240} height={60} className="brightness-0 invert" />
             </div>
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2.5 mb-2">
-                <Image src="/logos/logo-main.svg" alt="Emancia" width={130} height={32} className="brightness-0 invert" />
+                <Image src="/logos/logo-baseline.svg" alt="Emancia" width={130} height={32} className="brightness-0 invert" />
               </div>
               <p className="text-white/80 text-sm">Éducation Financière</p>
             </div>
           </div>
           <div className="bg-white p-8">
             <h3 className="font-display text-xl font-semibold text-bleu-nuit mb-3">Votre guide de la semaine</h3>
-            <p className="text-sm text-gris-texte leading-relaxed mb-4">
+            <p className="text-sm text-bleu-nuit/70 leading-relaxed mb-4">
               Découvrez nos derniers articles sur l&apos;investissement responsable et apprenez à construire un portefeuille diversifié, étape par étape.
             </p>
             <div className="inline-block bg-teal text-white text-sm px-5 py-2 rounded-lg">
@@ -57,6 +57,28 @@ export default function ContextesPage() {
         </div>
       </section>
 
+      {/* Email signature mockup */}
+      <section className="mb-12">
+        <h2 className="text-xl font-semibold mb-4">Signature email</h2>
+        <div className="rounded-xl overflow-hidden border border-gris-leger/30 max-w-lg mx-auto">
+          <div className="bg-white p-6">
+            <div className="border-t-2 border-teal pt-4">
+              <div className="flex items-start gap-4">
+                <Image src="/logos/logo-baseline.svg" alt="Emancia" width={100} height={28} />
+                <div className="text-sm">
+                  <p className="font-semibold text-bleu-nuit">Maxime Jouret</p>
+                  <p className="text-bleu-nuit/60 text-xs">Co-fondateur</p>
+                  <p className="text-bleu-nuit/60 text-xs mt-1">maxime@emancia.fr &middot; emancia.fr</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="text-xs text-bleu-nuit/60 text-center mt-3">
+          Utiliser <code className="font-mono bg-teal-clair/20 px-1.5 py-0.5 rounded text-teal">logo-baseline.svg</code> pour les signatures email (premier contact, identit&eacute; compl&egrave;te).
+        </p>
+      </section>
+
       {/* Social media avatar */}
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Avatar réseaux sociaux</h2>
@@ -64,25 +86,28 @@ export default function ContextesPage() {
           {/* Circular */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-full bg-teal flex items-center justify-center border-4 border-white shadow-lg overflow-hidden">
-              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} className="brightness-0 invert" />
+              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} className="brightness-0 invert" />
             </div>
-            <p className="text-xs text-gris-texte/60 mt-2">Circulaire</p>
+            <p className="text-xs text-bleu-nuit/60 mt-2">Circulaire</p>
           </div>
           {/* Square rounded */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-2xl bg-bleu-nuit flex items-center justify-center shadow-lg overflow-hidden">
-              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} className="brightness-0 invert" />
+              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} className="brightness-0 invert" />
             </div>
-            <p className="text-xs text-gris-texte/60 mt-2">Carré arrondi</p>
+            <p className="text-xs text-bleu-nuit/60 mt-2">Carr&eacute; arrondi</p>
           </div>
           {/* With background */}
           <div className="text-center">
             <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg overflow-hidden" style={{ backgroundColor: brand.colors.primary.blancCasse.hex }}>
-              <Image src="/logos/logo-main.svg" alt="Emancia" width={80} height={20} />
+              <Image src="/logos/logo-icon.svg" alt="Emancia" width={40} height={40} />
             </div>
-            <p className="text-xs text-gris-texte/60 mt-2">Fond clair</p>
+            <p className="text-xs text-bleu-nuit/60 mt-2">Fond clair</p>
           </div>
         </div>
+        <p className="text-xs text-bleu-nuit/60 text-center mt-3">
+          Utiliser <code className="font-mono bg-teal-clair/20 px-1.5 py-0.5 rounded text-teal">logo-icon.svg</code> pour les avatars ronds/carr&eacute;s (r&eacute;seaux sociaux, favicon) aux petites tailles.
+        </p>
       </section>
 
       {/* Footer mockup */}
@@ -132,10 +157,10 @@ export default function ContextesPage() {
             <div className="p-5">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs bg-teal/10 text-teal px-2 py-0.5 rounded-full">Investissement</span>
-                <span className="text-xs text-gris-texte/50">5 min</span>
+                <span className="text-xs text-bleu-nuit/50">5 min</span>
               </div>
               <h3 className="font-display font-semibold text-bleu-nuit mb-1">Comprendre les ETF en 5 minutes</h3>
-              <p className="text-sm text-gris-texte/70 leading-relaxed">Guide simple pour comprendre ce qu&apos;est un ETF et comment il peut vous aider à diversifier.</p>
+              <p className="text-sm text-bleu-nuit/70 leading-relaxed">Guide simple pour comprendre ce qu&apos;est un ETF et comment il peut vous aider à diversifier.</p>
             </div>
           </div>
         </div>

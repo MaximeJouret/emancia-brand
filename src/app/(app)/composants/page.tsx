@@ -1,3 +1,4 @@
+import { Info } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { CommentsSection } from '@/components/CommentsSection'
 
@@ -25,11 +26,11 @@ export default function ComposantsPage() {
             <button className="text-teal px-6 py-2.5 rounded-lg font-medium text-sm hover:bg-teal-clair/50 transition-colors">
               Ghost
             </button>
-            <button className="bg-gris-leger text-gris-texte/40 px-6 py-2.5 rounded-lg font-medium text-sm cursor-not-allowed">
+            <button className="bg-gris-leger text-bleu-nuit/40 px-6 py-2.5 rounded-lg font-medium text-sm cursor-not-allowed">
               Désactivé
             </button>
           </div>
-          <div className="text-sm text-gris-texte/70 space-y-1">
+          <div className="text-sm text-bleu-nuit/70 space-y-1">
             <p><strong>Border-radius :</strong> 8px (md)</p>
             <p><strong>Padding :</strong> 10px 24px</p>
             <p><strong>Font :</strong> DM Sans 500, 14px</p>
@@ -42,13 +43,13 @@ export default function ComposantsPage() {
         <div className="grid grid-cols-2 gap-6">
           <div className="bg-white rounded-xl p-6 border border-gris-leger">
             <h3 className="font-display text-lg font-semibold mb-2">Carte standard</h3>
-            <p className="text-sm text-gris-texte/80 leading-relaxed">
+            <p className="text-sm text-bleu-nuit/70 leading-relaxed">
               Fond blanc, bordure gris léger, border-radius 12px, padding 24px.
             </p>
           </div>
           <div className="bg-teal-clair rounded-xl p-6 border border-teal/10">
             <h3 className="font-display text-lg font-semibold text-teal-dark mb-2">Carte accentuée</h3>
-            <p className="text-sm text-gris-texte/80 leading-relaxed">
+            <p className="text-sm text-bleu-nuit/70 leading-relaxed">
               Fond teal clair, bordure teal/10, pour les sections mises en avant.
             </p>
           </div>
@@ -71,7 +72,7 @@ export default function ComposantsPage() {
             <p className="text-sm">Attention, cette action est irréversible.</p>
           </div>
           <div className="flex items-start gap-3 bg-info/10 rounded-lg p-4 border border-info/20">
-            <span className="text-info font-bold">i</span>
+            <Info className="w-5 h-5 text-info" />
             <p className="text-sm">L'épargne de précaution recommandée est de 3 à 6 mois de dépenses.</p>
           </div>
         </div>
@@ -80,7 +81,7 @@ export default function ComposantsPage() {
       <section className="mb-12">
         <h2 className="text-2xl font-semibold mb-6">Espacement</h2>
         <div className="bg-white rounded-xl p-8 border border-gris-leger">
-          <p className="text-sm text-gris-texte/80 mb-4">
+          <p className="text-sm text-bleu-nuit/70 mb-4">
             Le système d'espacement est basé sur un module de <strong>4px</strong>.
             Tous les espacements sont des multiples de ce module.
           </p>
@@ -91,7 +92,7 @@ export default function ComposantsPage() {
                   className="bg-teal/20 border border-teal/30 rounded"
                   style={{ width: size, height: size }}
                 />
-                <span className="text-xs font-mono text-gris-texte/60">{size}</span>
+                <span className="text-xs font-mono text-bleu-nuit/60">{size}</span>
               </div>
             ))}
           </div>

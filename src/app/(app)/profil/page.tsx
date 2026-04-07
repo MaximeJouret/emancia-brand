@@ -27,13 +27,13 @@ export default async function ProfilPage() {
             </div>
             <div>
               <h2 className="text-xl font-semibold text-bleu-nuit">{fullName}</h2>
-              <p className="text-sm text-gris-texte/60">{user.email}</p>
+              <p className="text-sm text-bleu-nuit/60">{user.email}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div className="bg-blanc-casse rounded-xl p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gris-texte/40 mb-1">Rôle</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-bleu-nuit/40 mb-1">Rôle</p>
               <div className="flex items-center gap-2">
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                   role === 'admin'
@@ -43,7 +43,7 @@ export default async function ProfilPage() {
                   {role === 'admin' ? 'Administrateur' : 'Lecteur'}
                 </span>
               </div>
-              <p className="text-xs text-gris-texte/50 mt-2">
+              <p className="text-xs text-bleu-nuit/50 mt-2">
                 {role === 'admin'
                   ? 'Vous pouvez modifier les guidelines de la charte graphique.'
                   : 'Vous pouvez consulter la charte graphique. Contactez un admin pour obtenir les droits d\'édition.'}
@@ -51,7 +51,7 @@ export default async function ProfilPage() {
             </div>
 
             <div className="bg-blanc-casse rounded-xl p-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gris-texte/40 mb-1">Membre depuis</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-bleu-nuit/40 mb-1">Membre depuis</p>
               <p className="text-sm font-medium text-bleu-nuit">
                 {new Date(user.created_at).toLocaleDateString('fr-FR', {
                   day: 'numeric',

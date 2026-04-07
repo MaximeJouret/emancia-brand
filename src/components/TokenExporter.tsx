@@ -129,7 +129,7 @@ export function TokenExporter() {
             className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
               active === id
                 ? 'bg-teal text-white'
-                : 'bg-white text-gris-texte hover:bg-teal/10 hover:text-teal border border-gris-leger/30'
+                : 'bg-white text-bleu-nuit hover:bg-teal/10 hover:text-teal border border-gris-leger/30'
             }`}
           >
             {label}

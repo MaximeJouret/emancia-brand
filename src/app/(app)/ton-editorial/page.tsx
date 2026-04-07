@@ -4,6 +4,24 @@ import { brand } from '@/lib/brand'
 
 const toneOfVoice = {
   philosophy: 'Emancia rend la finance personnelle accessible, compréhensible et actionnable. Nous croyons que chacun mérite de comprendre les mécanismes financiers pour prendre des décisions éclairées, sans jargon inutile ni promesses irréalistes.',
+  brandValues: [
+    {
+      label: 'Rigueur & Qualité',
+      description: 'Chaque contenu est vérifié, sourcé et structuré avec soin. Nous privilégions la profondeur à la quantité.',
+    },
+    {
+      label: 'Transparence',
+      description: 'Nous citons nos sources, mentionnons les risques et ne masquons jamais les limites d\'un conseil.',
+    },
+    {
+      label: 'Émancipation',
+      description: 'Nous donnons les clés pour que chacun puisse prendre ses propres décisions financières en toute autonomie.',
+    },
+    {
+      label: 'Authenticité',
+      description: 'Nous restons fidèles à nos valeurs, sans compromis commercial. Pas de conflits d\'intérêt, pas de faux-semblants.',
+    },
+  ],
   axes: [
     {
       label: 'Pédagogique',
@@ -41,6 +59,48 @@ const toneOfVoice = {
       bg: '#EAF6F5',
     },
   ],
+  platformTones: [
+    {
+      platform: 'TikTok/Reels',
+      tone: 'Dynamique, pédagogique, accrocheur',
+      specifics: 'Hook en 3 sec, langage accessible, humour léger',
+    },
+    {
+      platform: 'LinkedIn',
+      tone: 'Expert, professionnel, inspirant',
+      specifics: 'Données chiffrées, storytelling, crédibilité',
+    },
+    {
+      platform: 'YouTube',
+      tone: 'Approfondi, structuré, bienveillant',
+      specifics: 'Pédagogie progressive, exemples concrets',
+    },
+    {
+      platform: 'Site web',
+      tone: 'Clair, rassurant, empowering',
+      specifics: 'Guides détaillés, FAQ, parcours structuré',
+    },
+  ],
+  personas: [
+    {
+      name: 'Léa',
+      age: 25,
+      profil: 'Débutante, anxieuse face aux finances',
+      description: 'Léa débute dans la vie active et se sent dépassée par les questions financières. Elle cherche des explications simples, sans jugement, pour prendre confiance pas à pas.',
+    },
+    {
+      name: 'Marc',
+      age: 35,
+      profil: 'Indépendant, veut optimiser',
+      description: 'Marc est travailleur indépendant et souhaite mieux gérer ses finances professionnelles et personnelles. Il cherche des conseils concrets et actionnables.',
+    },
+    {
+      name: 'Sophie',
+      age: 45,
+      profil: 'En transition, veut comprendre pour décider',
+      description: 'Sophie traverse une transition de vie (divorce, héritage, reconversion) et veut comprendre ses options financières pour prendre des décisions éclairées et autonomes.',
+    },
+  ],
   hashtags: [
     '#EmancipationFinanciere',
     '#Emancia',
@@ -61,6 +121,12 @@ const toneOfVoice = {
     'enrichissez-vous rapidement',
     'opportunité unique',
     'revenus passifs garantis',
+    "C'est simple",
+    'Il suffit de',
+    'Tout le monde sait',
+    'Vous devriez',
+    'Évidemment',
+    'Clairement',
   ],
   preferredPhrases: [
     'Comprendre pour décider',
@@ -85,9 +151,25 @@ export default function TonEditorialPage() {
       {/* Philosophy */}
       <section className="mb-12">
         <div className="rounded-2xl bg-teal/5 p-8 border border-teal/10">
-          <p className="text-base italic text-gris-texte leading-relaxed">
+          <p className="text-base italic text-bleu-nuit/70 leading-relaxed">
             &ldquo;{toneOfVoice.philosophy}&rdquo;
           </p>
+        </div>
+      </section>
+
+      {/* Brand Values */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6">Valeurs de la marque</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {toneOfVoice.brandValues.map((value) => (
+            <div
+              key={value.label}
+              className="rounded-xl bg-white p-5 border border-gris-leger/30"
+            >
+              <h3 className="text-base font-semibold text-bleu-nuit mb-2">{value.label}</h3>
+              <p className="text-sm text-bleu-nuit/70 leading-relaxed">{value.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -105,8 +187,53 @@ export default function TonEditorialPage() {
                 <div className="h-3 w-3 rounded-full" style={{ backgroundColor: axis.color }} />
                 <span className="text-sm font-semibold" style={{ color: axis.color }}>{axis.label}</span>
               </div>
-              <p className="text-sm text-gris-texte/80 leading-relaxed mb-3">{axis.description}</p>
-              <p className="text-xs italic text-gris-texte/60">{axis.exemple}</p>
+              <p className="text-sm text-bleu-nuit/70 leading-relaxed mb-3">{axis.description}</p>
+              <p className="text-xs italic text-bleu-nuit/70">{axis.exemple}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Ton par plateforme */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6">Ton par plateforme</h2>
+        <div className="overflow-x-auto rounded-xl border border-gris-leger/30">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-bleu-nuit/5">
+                <th className="text-left p-4 font-semibold text-bleu-nuit">Plateforme</th>
+                <th className="text-left p-4 font-semibold text-bleu-nuit">Ton</th>
+                <th className="text-left p-4 font-semibold text-bleu-nuit">Spécificités</th>
+              </tr>
+            </thead>
+            <tbody>
+              {toneOfVoice.platformTones.map((row) => (
+                <tr key={row.platform} className="border-t border-gris-leger/20">
+                  <td className="p-4 font-medium text-bleu-nuit">{row.platform}</td>
+                  <td className="p-4 text-bleu-nuit/70">{row.tone}</td>
+                  <td className="p-4 text-bleu-nuit/70">{row.specifics}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Personas */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6">Personas cibles</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {toneOfVoice.personas.map((persona) => (
+            <div
+              key={persona.name}
+              className="rounded-xl bg-white p-5 border border-gris-leger/30"
+            >
+              <div className="flex items-baseline gap-2 mb-1">
+                <h3 className="text-base font-semibold text-bleu-nuit">{persona.name}</h3>
+                <span className="text-sm text-bleu-nuit/70">{persona.age} ans</span>
+              </div>
+              <p className="text-xs font-medium text-teal mb-3">{persona.profil}</p>
+              <p className="text-sm text-bleu-nuit/70 leading-relaxed">{persona.description}</p>
             </div>
           ))}
         </div>
@@ -131,7 +258,7 @@ export default function TonEditorialPage() {
             <h3 className="text-lg font-semibold text-error mb-4">Mots interdits</h3>
             <ul className="space-y-2">
               {toneOfVoice.forbiddenWords.map((w) => (
-                <li key={w} className="flex items-center gap-2 text-sm text-gris-texte/80">
+                <li key={w} className="flex items-center gap-2 text-sm text-bleu-nuit/70">
                   <span className="text-error text-xs">&#10005;</span> {w}
                 </li>
               ))}
@@ -141,7 +268,7 @@ export default function TonEditorialPage() {
             <h3 className="text-lg font-semibold text-success mb-4">Expressions préférées</h3>
             <ul className="space-y-2">
               {toneOfVoice.preferredPhrases.map((p) => (
-                <li key={p} className="flex items-center gap-2 text-sm text-gris-texte/80">
+                <li key={p} className="flex items-center gap-2 text-sm text-bleu-nuit/70">
                   <span className="text-success text-xs">&#10003;</span> {p}
                 </li>
               ))}
@@ -165,7 +292,7 @@ export default function TonEditorialPage() {
                 'Encourager la réflexion personnelle',
                 'Utiliser le tutoiement bienveillant',
               ].map((r) => (
-                <li key={r} className="flex items-start gap-2 text-sm text-gris-texte/80">
+                <li key={r} className="flex items-start gap-2 text-sm text-bleu-nuit/70">
                   <span className="text-success mt-0.5">&#9654;</span> {r}
                 </li>
               ))}
@@ -182,7 +309,7 @@ export default function TonEditorialPage() {
                 'Créer un sentiment d\'urgence artificiel',
                 'Utiliser un ton condescendant ou paternaliste',
               ].map((r) => (
-                <li key={r} className="flex items-start gap-2 text-sm text-gris-texte/80">
+                <li key={r} className="flex items-start gap-2 text-sm text-bleu-nuit/70">
                   <span className="text-error mt-0.5">&#9654;</span> {r}
                 </li>
               ))}

@@ -49,7 +49,7 @@ function DonutChart() {
         {donutData.map((d) => (
           <div key={d.label} className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-            <span className="text-sm text-gris-texte/80">{d.label}</span>
+            <span className="text-sm text-bleu-nuit/80">{d.label}</span>
             <span className="font-mono text-sm font-medium ml-auto">{d.value}%</span>
           </div>
         ))}
@@ -74,7 +74,7 @@ export default function GraphiquesPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {kpiData.map((kpi) => (
             <div key={kpi.label} className="bg-white rounded-xl p-5 border border-gris-leger/30">
-              <p className="text-xs text-gris-texte/60 mb-1">{kpi.label}</p>
+              <p className="text-xs text-bleu-nuit/60 mb-1">{kpi.label}</p>
               <p className="text-2xl font-mono font-bold text-bleu-nuit">{kpi.value}</p>
               <p className={`text-xs font-medium mt-1 ${kpi.positive ? 'text-success' : 'text-error'}`}>
                 {kpi.change}
@@ -88,17 +88,17 @@ export default function GraphiquesPage() {
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Graphique en barres</h2>
         <div className="bg-white rounded-xl p-6 border border-gris-leger/30">
-          <p className="text-sm text-gris-texte/60 mb-4">Inscriptions mensuelles (2026)</p>
+          <p className="text-sm text-bleu-nuit/60 mb-4">Inscriptions mensuelles (2026)</p>
 
           {/* Y-axis + bars */}
           <div className="flex gap-2">
             {/* Y axis labels */}
             <div className="flex flex-col justify-between h-56 pr-1 text-right shrink-0 w-8">
-              <span className="font-mono text-[10px] text-gris-texte/40">100</span>
-              <span className="font-mono text-[10px] text-gris-texte/40">75</span>
-              <span className="font-mono text-[10px] text-gris-texte/40">50</span>
-              <span className="font-mono text-[10px] text-gris-texte/40">25</span>
-              <span className="font-mono text-[10px] text-gris-texte/40">0</span>
+              <span className="font-mono text-[10px] text-bleu-nuit/40">100</span>
+              <span className="font-mono text-[10px] text-bleu-nuit/40">75</span>
+              <span className="font-mono text-[10px] text-bleu-nuit/40">50</span>
+              <span className="font-mono text-[10px] text-bleu-nuit/40">25</span>
+              <span className="font-mono text-[10px] text-bleu-nuit/40">0</span>
             </div>
 
             {/* Chart area */}
@@ -138,7 +138,7 @@ export default function GraphiquesPage() {
           <div className="flex gap-2 ml-10">
             {barData.map((d) => (
               <div key={d.label} className="flex-1 text-center">
-                <span className="text-xs text-gris-texte/50">{d.label}</span>
+                <span className="text-xs text-bleu-nuit/50">{d.label}</span>
               </div>
             ))}
           </div>
@@ -149,7 +149,7 @@ export default function GraphiquesPage() {
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Graphique circulaire</h2>
         <div className="bg-white rounded-xl p-6 border border-gris-leger/30">
-          <p className="text-sm text-gris-texte/60 mb-6">Répartition d'un portefeuille diversifié</p>
+          <p className="text-sm text-bleu-nuit/60 mb-6">Répartition d'un portefeuille diversifié</p>
           <DonutChart />
         </div>
       </section>
@@ -158,7 +158,7 @@ export default function GraphiquesPage() {
       <section className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Graphique linéaire</h2>
         <div className="bg-white rounded-xl p-6 border border-gris-leger/30">
-          <p className="text-sm text-gris-texte/60 mb-6">Évolution du capital (simulation)</p>
+          <p className="text-sm text-bleu-nuit/60 mb-6">Évolution du capital (simulation)</p>
           <svg viewBox="0 0 400 200" className="w-full h-48">
             <defs>
               <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
@@ -191,7 +191,7 @@ export default function GraphiquesPage() {
           </svg>
           <div className="flex justify-between mt-2">
             {['2026', '2028', '2030', '2032', '2034', '2036', '2038', '2040', '2042'].map((y) => (
-              <span key={y} className="text-xs text-gris-texte/40 font-mono">{y}</span>
+              <span key={y} className="text-xs text-bleu-nuit/40 font-mono">{y}</span>
             ))}
           </div>
         </div>
@@ -203,15 +203,15 @@ export default function GraphiquesPage() {
         <div className="space-y-3">
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Palette de données</h3>
-            <p className="text-sm text-gris-texte/80">Utiliser les couleurs brand dans cet ordre : Teal, Bleu nuit, Prune, Sauge, Teal clair. Max 5 segments distincts.</p>
+            <p className="text-sm text-bleu-nuit/80">Utiliser les couleurs brand dans cet ordre : Teal, Bleu nuit, Prune, Sauge, Teal clair. Max 5 segments distincts.</p>
           </div>
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Positif / Négatif</h3>
-            <p className="text-sm text-gris-texte/80">Toujours utiliser les couleurs fonctionnelles : <span className="text-success font-medium">succès (#4CAF82)</span> pour le positif, <span className="text-error font-medium">erreur (#E05252)</span> pour le négatif.</p>
+            <p className="text-sm text-bleu-nuit/80">Toujours utiliser les couleurs fonctionnelles : <span className="text-success font-medium">succès (#4CAF82)</span> pour le positif, <span className="text-error font-medium">erreur (#E05252)</span> pour le négatif.</p>
           </div>
           <div className="bg-white rounded-xl p-5 border border-gris-leger/30">
             <h3 className="font-semibold mb-1">Typographie données</h3>
-            <p className="text-sm text-gris-texte/80">Toujours utiliser <code className="font-mono text-teal bg-teal/5 px-1 rounded">JetBrains Mono</code> pour les chiffres et valeurs numériques.</p>
+            <p className="text-sm text-bleu-nuit/80">Toujours utiliser <code className="font-mono text-teal bg-teal/5 px-1 rounded">JetBrains Mono</code> pour les chiffres et valeurs numériques.</p>
           </div>
         </div>
       </section>

@@ -13,16 +13,19 @@
   --color-sauge: #A8C280;
 
   /* Functional */
-  --color-success: #4CAF82;
+  --color-success: #5A8A4A;
   --color-error: #E05252;
   --color-warning: #F0A500;
   --color-info: #88C9C7;
 
   /* Dark mode */
-  --color-dark-bg: #121212;
-  --color-dark-surface: #1E1E1E;
-  --color-dark-teal: #3DD4CC;
+  --color-dark-bg: #0F1A24;
+  --color-dark-surface: #162535;
+  --color-dark-teal: #88C9C7;
   --color-dark-text: #E4E4E4;
+
+  /* Secondary extended */
+  --color-bleu-nuit-clair: #2A4A5C;
 
   /* Legacy aliases (used by other pages) */
   --color-teal-dark: #106C68;

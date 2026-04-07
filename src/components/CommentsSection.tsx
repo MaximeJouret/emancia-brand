@@ -107,7 +107,7 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
     <div className="mt-16 border-t border-gris-leger/30 pt-8">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 text-sm font-medium text-gris-texte/60 hover:text-bleu-nuit transition-colors group"
+        className="flex items-center gap-2.5 text-sm font-medium text-bleu-nuit/60 hover:text-bleu-nuit transition-colors group"
       >
         <MessageSquare size={18} />
         <span>Commentaires</span>
@@ -117,9 +117,9 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
           </span>
         )}
         {isOpen ? (
-          <ChevronUp size={14} className="text-gris-texte/30" />
+          <ChevronUp size={14} className="text-bleu-nuit/30" />
         ) : (
-          <ChevronDown size={14} className="text-gris-texte/30" />
+          <ChevronDown size={14} className="text-bleu-nuit/30" />
         )}
       </button>
 
@@ -150,20 +150,20 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
                         <span className="text-sm font-medium text-bleu-nuit">
                           {comment.user_name || comment.user_email?.split('@')[0]}
                         </span>
-                        <span className="text-[10px] text-gris-texte/30">
+                        <span className="text-[10px] text-bleu-nuit/30">
                           {timeAgo(comment.created_at)}
                         </span>
                         {isOwner && (
                           <button
                             onClick={() => handleDelete(comment.id)}
-                            className="p-0.5 rounded text-gris-texte/20 hover:text-error opacity-0 group-hover:opacity-100 transition-all"
+                            className="p-0.5 rounded text-bleu-nuit/20 hover:text-error opacity-0 group-hover:opacity-100 transition-all"
                             title="Supprimer"
                           >
                             <Trash2 size={12} />
                           </button>
                         )}
                       </div>
-                      <p className="text-sm text-gris-texte/70 leading-relaxed whitespace-pre-wrap">
+                      <p className="text-sm text-bleu-nuit/70 leading-relaxed whitespace-pre-wrap">
                         {comment.message}
                       </p>
                     </div>
@@ -174,7 +174,7 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
           )}
 
           {comments.length === 0 && (
-            <p className="text-xs text-gris-texte/30 mb-4">
+            <p className="text-xs text-bleu-nuit/30 mb-4">
               Aucun commentaire pour le moment. Soyez le premier à donner votre avis.
             </p>
           )}
@@ -187,7 +187,7 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Ajouter un commentaire..."
                 rows={2}
-                className="w-full px-4 py-2.5 rounded-xl border border-gris-leger/50 text-sm text-gris-texte placeholder:text-gris-texte/25 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/10 transition-all resize-none bg-white"
+                className="w-full px-4 py-2.5 rounded-xl border border-gris-leger/50 text-sm text-bleu-nuit placeholder:text-bleu-nuit/25 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/10 transition-all resize-none bg-white"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault()
@@ -204,7 +204,7 @@ export function CommentsSection({ pageSlug }: { pageSlug: string }) {
               <Send size={16} />
             </button>
           </form>
-          <p className="text-[10px] text-gris-texte/25 mt-1.5">Entrée pour envoyer · Shift+Entrée pour un saut de ligne</p>
+          <p className="text-[10px] text-bleu-nuit/25 mt-1.5">Entrée pour envoyer · Shift+Entrée pour un saut de ligne</p>
         </div>
       )}
     </div>

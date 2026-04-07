@@ -174,17 +174,20 @@ function ColorCard({ color }: { color: ColorDef }) {
   const light = !isLightColor(color.hex)
 
   return (
-    <div className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm">
-      <div
-        className="h-32 flex flex-col justify-end p-4"
-        style={{ backgroundColor: color.hex }}
-      >
+    <div
+      className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm flex flex-col"
+      style={{ backgroundColor: color.hex }}
+    >
+      <div className="h-32 flex flex-col justify-end p-4">
         <p className={`font-display text-lg font-semibold ${light ? 'text-white' : 'text-bleu-nuit'}`}>
           {color.name}
         </p>
         <CopyableHex hex={color.hex} light={light} />
       </div>
-      <div className="bg-white p-4">
+      <div
+        className="p-4 mt-auto"
+        style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}
+      >
         <p className="text-xs text-bleu-nuit/70 leading-relaxed">{color.usage}</p>
         <p className="text-[10px] text-bleu-nuit/40 font-mono mt-2">RGB: {hexToRgb(color.hex)}</p>
       </div>
@@ -369,11 +372,12 @@ export default function CouleursPage() {
               {darkModeColors.map((c) => {
                 const textOnSwatch = isLightColor(c.hex) ? '#1A2B3C' : '#FFFFFF'
                 return (
-                  <div key={c.hex} className="rounded-lg overflow-hidden border border-white/10">
-                    <div
-                      className="h-28 flex flex-col justify-between p-4"
-                      style={{ backgroundColor: c.hex }}
-                    >
+                  <div
+                    key={c.hex}
+                    className="rounded-lg overflow-hidden border border-white/10 flex flex-col"
+                    style={{ backgroundColor: c.hex }}
+                  >
+                    <div className="h-28 flex flex-col justify-between p-4">
                       <span className="font-display text-sm font-semibold" style={{ color: textOnSwatch }}>
                         {c.name}
                       </span>
@@ -381,7 +385,7 @@ export default function CouleursPage() {
                         {c.hex}
                       </span>
                     </div>
-                    <div className="p-4" style={{ backgroundColor: '#2A4A5C' }}>
+                    <div className="p-4" style={{ backgroundColor: 'rgba(0,0,0,0.25)' }}>
                       <p className="text-xs text-white/80 leading-relaxed">{c.usage}</p>
                     </div>
                   </div>
@@ -404,15 +408,16 @@ export default function CouleursPage() {
           {functionalColors.map((c) => {
             const textOnSwatch = isLightColor(c.hex) ? '#1A2B3C' : '#FFFFFF'
             return (
-              <div key={c.name} className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm">
-                <div
-                  className="h-28 flex flex-col justify-between p-4"
-                  style={{ backgroundColor: c.hex }}
-                >
+              <div
+                key={c.name}
+                className="rounded-lg overflow-hidden border border-[#2A4A5C]/15 shadow-sm flex flex-col"
+                style={{ backgroundColor: c.hex }}
+              >
+                <div className="h-28 flex flex-col justify-between p-4">
                   <span className="font-display font-semibold text-sm" style={{ color: textOnSwatch }}>{c.name}</span>
                   <span className="text-[11px] font-mono" style={{ color: textOnSwatch, opacity: 0.7 }}>{c.hex}</span>
                 </div>
-                <div className="bg-white p-4">
+                <div className="p-4" style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}>
                   <p className="text-xs text-bleu-nuit/70 leading-relaxed">{c.usage}</p>
                 </div>
               </div>

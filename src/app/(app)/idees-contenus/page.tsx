@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Pencil, Trash2, X, Check, Camera, Play, Briefcase, MessageCircle, Video, Lightbulb, ExternalLink, GripVertical, List, Columns3, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, Camera, Play, Briefcase, MessageCircle, Video, Lightbulb, ExternalLink, GripVertical, List, Columns3, ChevronLeft, ChevronRight, CalendarDays, Heart } from 'lucide-react'
 
 interface ContentIdea {
   id: string
@@ -18,6 +18,8 @@ interface ContentIdea {
   link: string | null
   status: string
   scheduled_date: string | null
+  liked_by: string[]
+  position: number
   created_at: string
   updated_at: string
 }
@@ -216,11 +218,17 @@ export default function IdeesContenusPage() {
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board')
   const [error, setError] = useState('')
   const [weekOffset, setWeekOffset] = useState(0)
+  const [sortByLikes, setSortByLikes] = useState(false)
+
+  // Expanded card state
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   // Drag state
   const [draggedId, setDraggedId] = useState<string | null>(null)
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null)
   const [dragOverDate, setDragOverDate] = useState<string | null>(null)
+  const [dragOverCardId, setDragOverCardId] = useState<string | null>(null)
+  const [dragOverCardPosition, setDragOverCardPosition] = useState<'before' | 'after'>('before')
   const dragCounter = useRef<Record<string, number>>({})
 
   // Form state
@@ -233,16 +241,32 @@ export default function IdeesContenusPage() {
 
   const fetchIdeas = useCallback(async () => {
     const supabase = createClient()
-    const { data, error } = await supabase
+    // Try with position ordering first, fallback to created_at only
+    let result = await supabase
       .from('content_ideas')
       .select('*')
+      .order('position', { ascending: true })
       .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching ideas:', error)
+    // If position column doesn't exist yet, retry without it
+    if (result.error && result.error.message?.includes('position')) {
+      result = await supabase
+        .from('content_ideas')
+        .select('*')
+        .order('created_at', { ascending: false })
+    }
+
+    if (result.error) {
+      console.error('Error fetching ideas:', result.error)
       setError('Erreur lors du chargement. As-tu bien créé la table dans Supabase ?')
     } else {
-      setIdeas(data || [])
+      setIdeas((result.data || []).map((d: Record<string, unknown>) => ({
+        ...d,
+        liked_by: Array.isArray(d.liked_by) ? d.liked_by as string[] : [],
+        position: typeof d.position === 'number' ? d.position : 0,
+        platforms: Array.isArray(d.platforms) ? d.platforms as string[] : [],
+        content_types: Array.isArray(d.content_types) ? d.content_types as string[] : [],
+      })) as ContentIdea[])
       setError('')
     }
     setLoading(false)
@@ -310,10 +334,25 @@ export default function IdeesContenusPage() {
         .eq('id', editingId)
       if (error) { setError(error.message); return }
     } else {
+      // New idea: position at the top of its column
+      const maxPos = ideas.filter(i => i.status === formStatus).reduce((max, i) => Math.max(max, i.position || 0), 0)
+      const insertPayload = { ...payload, position: maxPos + 1, created_at: new Date().toISOString() }
       const { error } = await supabase
         .from('content_ideas')
-        .insert({ ...payload, created_at: new Date().toISOString() })
-      if (error) { setError(error.message); return }
+        .insert(insertPayload)
+      if (error) {
+        // If position/liked_by columns don't exist, retry without them
+        if (error.message?.includes('position') || error.message?.includes('liked_by')) {
+          const { position: _p, liked_by: _l, ...fallbackPayload } = insertPayload as Record<string, unknown>
+          void _p; void _l;
+          const { error: err2 } = await supabase
+            .from('content_ideas')
+            .insert(fallbackPayload)
+          if (err2) { setError(err2.message); return }
+        } else {
+          setError(error.message); return
+        }
+      }
     }
 
     resetForm()
@@ -331,17 +370,144 @@ export default function IdeesContenusPage() {
     const idea = ideas.find(i => i.id === ideaId)
     if (!idea) return
 
-    setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: newStatus } : i))
+    // When moving to a new column, add at the end
+    const targetColumnIdeas = ideas.filter(i => i.status === newStatus)
+    const maxPos = targetColumnIdeas.reduce((max, i) => Math.max(max, i.position || 0), 0)
+
+    setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: newStatus, position: maxPos + 1 } : i))
 
     const supabase = createClient()
     const { error } = await supabase
       .from('content_ideas')
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .update({ status: newStatus, position: maxPos + 1, updated_at: new Date().toISOString() })
       .eq('id', ideaId)
 
     if (error) {
-      setError(error.message)
-      setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: idea.status } : i))
+      // If position column doesn't exist, try without it
+      if (error.message?.includes('position')) {
+        const { error: err2 } = await supabase
+          .from('content_ideas')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', ideaId)
+        if (err2) {
+          setError(err2.message)
+          setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: idea.status } : i))
+        }
+      } else {
+        setError(error.message)
+        setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, status: idea.status, position: idea.position } : i))
+      }
+    }
+  }
+
+  // Reorder ideas within a column
+  const handleReorder = async (draggedIdeaId: string, targetIdeaId: string, position: 'before' | 'after') => {
+    const draggedIdea = ideas.find(i => i.id === draggedIdeaId)
+    const targetIdea = ideas.find(i => i.id === targetIdeaId)
+    if (!draggedIdea || !targetIdea) return
+
+    const columnStatus = targetIdea.status
+    const columnIdeas = ideas
+      .filter(i => i.status === columnStatus && i.id !== draggedIdeaId)
+      .sort((a, b) => (a.position || 0) - (b.position || 0))
+
+    // Insert dragged idea at the right position
+    const targetIndex = columnIdeas.findIndex(i => i.id === targetIdeaId)
+    const insertIndex = position === 'before' ? targetIndex : targetIndex + 1
+
+    const newOrder = [...columnIdeas]
+    // If moving from another column, the dragged idea needs status change
+    const movedIdea = { ...draggedIdea, status: columnStatus }
+    newOrder.splice(insertIndex, 0, movedIdea)
+
+    // Assign new positions
+    const updates: { id: string; position: number; status?: string }[] = newOrder.map((idea, index) => ({
+      id: idea.id,
+      position: index + 1,
+      ...(idea.id === draggedIdeaId && draggedIdea.status !== columnStatus ? { status: columnStatus } : {}),
+    }))
+
+    // Optimistic update
+    setIdeas(prev => {
+      const updated = prev.map(i => {
+        const u = updates.find(u => u.id === i.id)
+        if (u) return { ...i, position: u.position, ...(u.status ? { status: u.status } : {}) }
+        return i
+      })
+      return updated
+    })
+
+    // Persist to DB
+    const supabase = createClient()
+    try {
+      // Try RPC first (most efficient)
+      const { error: rpcError } = await supabase.rpc('reorder_ideas', {
+        p_ids: newOrder.map(i => i.id),
+      })
+
+      if (rpcError) {
+        // Fallback: individual updates (position column might not exist yet)
+        for (const u of updates) {
+          const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() }
+          if (u.status) updatePayload.status = u.status
+          updatePayload.position = u.position
+
+          const { error } = await supabase
+            .from('content_ideas')
+            .update(updatePayload)
+            .eq('id', u.id)
+
+          if (error && error.message?.includes('position')) {
+            // position column missing — only update status if needed
+            if (u.status) {
+              await supabase
+                .from('content_ideas')
+                .update({ status: u.status, updated_at: new Date().toISOString() })
+                .eq('id', u.id)
+            }
+          }
+        }
+      }
+    } catch {
+      console.warn('Reorder not persisted — run the SQL migration to enable persistence')
+    }
+  }
+
+  // Like toggle
+  const handleLike = async (ideaId: string) => {
+    if (!userId) return
+    const idea = ideas.find(i => i.id === ideaId)
+    if (!idea) return
+
+    const likedBy = idea.liked_by || []
+    const isLiked = likedBy.includes(userId)
+    const newLikedBy = isLiked
+      ? likedBy.filter(id => id !== userId)
+      : [...likedBy, userId]
+
+    // Optimistic update
+    setIdeas(prev => prev.map(i => i.id === ideaId ? { ...i, liked_by: newLikedBy } : i))
+
+    const supabase = createClient()
+    try {
+      // Try RPC first (needs toggle_like function in Supabase)
+      const { error: rpcError } = await supabase.rpc('toggle_like', { p_idea_id: ideaId })
+
+      if (rpcError) {
+        // Fallback: direct update
+        const { error } = await supabase
+          .from('content_ideas')
+          .update({ liked_by: newLikedBy, updated_at: new Date().toISOString() })
+          .eq('id', ideaId)
+
+        if (error) {
+          // Column might not exist yet — keep optimistic state locally only
+          console.warn('Like not persisted (run SQL migration):', error.message)
+        }
+      }
+    } catch {
+      // Keep optimistic state — works locally even without DB column
+      console.warn('Like not persisted — run the SQL migration to enable persistence')
     }
   }
 
@@ -377,6 +543,7 @@ export default function IdeesContenusPage() {
     setDraggedId(null)
     setDragOverColumn(null)
     setDragOverDate(null)
+    setDragOverCardId(null)
     dragCounter.current = {}
     if (e.currentTarget instanceof HTMLElement) {
       e.currentTarget.style.opacity = '1'
@@ -408,13 +575,60 @@ export default function IdeesContenusPage() {
     e.preventDefault()
     const ideaId = e.dataTransfer.getData('text/plain')
     if (ideaId && draggedId) {
-      const idea = ideas.find(i => i.id === ideaId)
-      if (idea && idea.status !== newStatus) {
-        handleStatusChange(ideaId, newStatus)
+      // If dropped on a card, the card handler takes priority
+      // This handles drops on the empty zone of the column
+      if (!dragOverCardId) {
+        const idea = ideas.find(i => i.id === ideaId)
+        if (idea) {
+          if (idea.status !== newStatus) {
+            handleStatusChange(ideaId, newStatus)
+          }
+          // If same column but no target card, do nothing (already at bottom)
+        }
       }
     }
     setDraggedId(null)
     setDragOverColumn(null)
+    setDragOverCardId(null)
+    dragCounter.current = {}
+  }
+
+  // Card-level drag handlers for reordering
+  const handleCardDragOver = (e: React.DragEvent, cardId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'move'
+
+    if (cardId === draggedId) return
+
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const midY = rect.top + rect.height / 2
+    const pos: 'before' | 'after' = e.clientY < midY ? 'before' : 'after'
+
+    setDragOverCardId(cardId)
+    setDragOverCardPosition(pos)
+  }
+
+  const handleCardDragLeave = (e: React.DragEvent, cardId: string) => {
+    // Only clear if actually leaving this card (not entering a child)
+    const relatedTarget = e.relatedTarget as HTMLElement | null
+    if (relatedTarget && (e.currentTarget as HTMLElement).contains(relatedTarget)) return
+    if (dragOverCardId === cardId) {
+      setDragOverCardId(null)
+    }
+  }
+
+  const handleCardDrop = (e: React.DragEvent, targetIdea: ContentIdea) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const ideaId = e.dataTransfer.getData('text/plain')
+    if (!ideaId || ideaId === targetIdea.id || !draggedId) return
+
+    handleReorder(ideaId, targetIdea.id, dragOverCardPosition)
+
+    setDraggedId(null)
+    setDragOverColumn(null)
+    setDragOverCardId(null)
     dragCounter.current = {}
   }
 
@@ -448,6 +662,11 @@ export default function IdeesContenusPage() {
     const ideaPlatforms = getIdeaPlatforms(idea)
     return filterPlatforms.some(fp => ideaPlatforms.includes(fp))
   })
+
+  // Sort: by position (default) or by likes count
+  const sortedFilteredIdeas = sortByLikes
+    ? [...filteredIdeas].sort((a, b) => (b.liked_by?.length || 0) - (a.liked_by?.length || 0))
+    : filteredIdeas
 
   const stats = {
     total: ideas.length,
@@ -502,9 +721,30 @@ export default function IdeesContenusPage() {
     )
   }
 
+  const renderLikeButton = (idea: ContentIdea, size: 'sm' | 'md' = 'sm') => {
+    const likeCount = idea.liked_by?.length || 0
+    const isLiked = userId ? (idea.liked_by || []).includes(userId) : false
+    const iconSize = size === 'sm' ? 12 : 16
+
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); handleLike(idea.id) }}
+        className={`flex items-center gap-1 transition-all ${
+          size === 'sm'
+            ? `px-1.5 py-0.5 rounded text-[10px] ${isLiked ? 'text-error' : 'text-bleu-nuit/30 hover:text-error/60'}`
+            : `px-2.5 py-1 rounded-md text-xs ${isLiked ? 'text-error bg-error/5' : 'text-bleu-nuit/40 hover:text-error/60 hover:bg-error/5'}`
+        }`}
+        title={isLiked ? 'Retirer le like' : 'Liker cette idée'}
+      >
+        <Heart size={iconSize} fill={isLiked ? 'currentColor' : 'none'} />
+        {likeCount > 0 && <span className="font-medium">{likeCount}</span>}
+      </button>
+    )
+  }
+
   const renderIdeaCard = (idea: ContentIdea, compact = false) => {
-    const status = getStatusInfo(idea.status)
     const isOwner = userId === idea.user_id
+    const isDropTarget = dragOverCardId === idea.id && draggedId !== idea.id
 
     return (
       <div
@@ -512,33 +752,53 @@ export default function IdeesContenusPage() {
         draggable
         onDragStart={(e) => handleDragStart(e, idea.id)}
         onDragEnd={handleDragEnd}
-        className={`bg-white rounded-lg border border-gris-leger/30 hover:shadow-md transition-all group cursor-grab active:cursor-grabbing ${
-          compact ? 'p-3' : 'p-5'
-        } ${draggedId === idea.id ? 'opacity-50 scale-95' : ''}`}
+        onDragOver={compact ? (e) => handleCardDragOver(e, idea.id) : undefined}
+        onDragLeave={compact ? (e) => handleCardDragLeave(e, idea.id) : undefined}
+        onDrop={compact ? (e) => handleCardDrop(e, idea) : undefined}
+        onClick={() => { if (compact && !draggedId) setExpandedId(idea.id) }}
+        className={`bg-white rounded-lg border transition-all group relative ${
+          compact ? 'p-3 cursor-pointer' : 'p-5 cursor-grab active:cursor-grabbing'
+        } ${draggedId === idea.id ? 'opacity-50 scale-95' : ''} ${
+          isDropTarget
+            ? 'border-teal ring-1 ring-teal/20'
+            : 'border-gris-leger/30 hover:shadow-md'
+        }`}
       >
+        {/* Drop indicator line */}
+        {isDropTarget && compact && (
+          <div
+            className={`absolute left-1 right-1 h-0.5 bg-teal rounded-full z-10 ${
+              dragOverCardPosition === 'before' ? '-top-1' : '-bottom-1'
+            }`}
+          />
+        )}
+
         {compact ? (
           <div>
             <div className="flex items-center gap-2 mb-2">
               {renderPlatformBadges(idea)}
               {renderContentTypeBadges(idea)}
-              {isOwner && (
-                <div className="flex items-center gap-0.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); startEdit(idea) }}
-                    className="p-1 rounded text-bleu-nuit/30 hover:text-teal hover:bg-teal/5 transition-colors"
-                    title="Modifier"
-                  >
-                    <Pencil size={11} />
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(idea.id) }}
-                    className="p-1 rounded text-bleu-nuit/30 hover:text-error hover:bg-error/5 transition-colors"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={11} />
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-0.5 ml-auto">
+                {renderLikeButton(idea, 'sm')}
+                {isOwner && (
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); startEdit(idea) }}
+                      className="p-1 rounded text-bleu-nuit/30 hover:text-teal hover:bg-teal/5 transition-colors"
+                      title="Modifier"
+                    >
+                      <Pencil size={11} />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(idea.id) }}
+                      className="p-1 rounded text-bleu-nuit/30 hover:text-error hover:bg-error/5 transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <h3 className="font-semibold text-sm text-bleu-nuit leading-snug line-clamp-2 mb-1">{idea.title}</h3>
@@ -587,9 +847,9 @@ export default function IdeesContenusPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-semibold text-bleu-nuit truncate">{idea.title}</h3>
-                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${status.bg} ${status.text}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                  {status.label}
+                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusInfo(idea.status).bg} ${getStatusInfo(idea.status).text}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${getStatusInfo(idea.status).dot}`} />
+                  {getStatusInfo(idea.status).label}
                 </span>
               </div>
 
@@ -633,24 +893,27 @@ export default function IdeesContenusPage() {
               </div>
             </div>
 
-            {isOwner && (
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                <button
-                  onClick={() => startEdit(idea)}
-                  className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
-                  title="Modifier"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  onClick={() => handleDelete(idea.id)}
-                  className="p-2 rounded-lg text-bleu-nuit/40 hover:text-error hover:bg-error/5 transition-colors"
-                  title="Supprimer"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-1 shrink-0">
+              {renderLikeButton(idea, 'md')}
+              {isOwner && (
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => startEdit(idea)}
+                    className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(idea.id)}
+                    className="p-2 rounded-lg text-bleu-nuit/40 hover:text-error hover:bg-error/5 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -685,7 +948,7 @@ export default function IdeesContenusPage() {
             </h1>
             <p className="text-sm text-bleu-nuit/70 max-w-xl leading-relaxed">
               Proposez des idées de contenus pour les réseaux sociaux et YouTube.
-              Glissez-déposez les cartes entre les colonnes pour changer leur statut, ou sur le calendrier pour planifier le tournage.
+              Glissez-déposez les cartes entre les colonnes pour changer leur statut, réorganisez-les par priorité, ou planifiez le tournage sur le calendrier.
             </p>
           </div>
           <button
@@ -727,6 +990,21 @@ export default function IdeesContenusPage() {
             Tout afficher
           </button>
         )}
+
+        <div className="h-4 w-px bg-gris-leger/30 mx-1" />
+
+        {/* Sort by likes toggle */}
+        <button
+          onClick={() => setSortByLikes(!sortByLikes)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all border ${
+            sortByLikes
+              ? 'border-error/30 bg-error/5 text-error'
+              : 'border-gris-leger/50 text-bleu-nuit/40 hover:border-error/20 hover:text-error/60'
+          }`}
+        >
+          <Heart size={12} fill={sortByLikes ? 'currentColor' : 'none'} />
+          Plus likées
+        </button>
 
         <div className="flex items-center gap-1 ml-auto bg-white rounded-lg border border-gris-leger/30 p-0.5">
           <button
@@ -877,8 +1155,145 @@ export default function IdeesContenusPage() {
         </div>
       )}
 
+      {/* Expanded card modal */}
+      {expandedId && (() => {
+        const idea = ideas.find(i => i.id === expandedId)
+        if (!idea) return null
+        const status = getStatusInfo(idea.status)
+        const isOwner = userId === idea.user_id
+        const platforms = getIdeaPlatforms(idea)
+        const contentTypes = getIdeaContentTypes(idea)
+
+        return (
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setExpandedId(null)}
+          >
+            <div
+              className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gris-leger/30">
+                <div className="flex items-center gap-2">
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                    {status.label}
+                  </span>
+                  {renderLikeButton(idea, 'md')}
+                </div>
+                <div className="flex items-center gap-1">
+                  {isOwner && (
+                    <>
+                      <button
+                        onClick={() => { setExpandedId(null); startEdit(idea) }}
+                        className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
+                        title="Modifier"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => { setExpandedId(null); handleDelete(idea.id) }}
+                        className="p-2 rounded-lg text-bleu-nuit/40 hover:text-error hover:bg-error/5 transition-colors"
+                        title="Supprimer"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </>
+                  )}
+                  <button
+                    onClick={() => setExpandedId(null)}
+                    className="p-2 rounded-lg text-bleu-nuit/40 hover:text-bleu-nuit transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 py-5 space-y-4">
+                <h3 className="font-display text-lg font-semibold text-bleu-nuit">{idea.title}</h3>
+
+                {idea.description && (
+                  <div className="text-sm text-bleu-nuit/70 leading-relaxed whitespace-pre-wrap">
+                    <Linkify text={idea.description} />
+                  </div>
+                )}
+
+                {idea.link && (
+                  <a
+                    href={idea.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-teal hover:text-teal-dark transition-colors"
+                  >
+                    <ExternalLink size={14} />
+                    <span className="underline underline-offset-2 break-all">
+                      {idea.link}
+                    </span>
+                  </a>
+                )}
+
+                <div className="flex flex-wrap gap-2">
+                  {platforms.map(pv => {
+                    const p = getPlatformInfo(pv)
+                    if (!p) return null
+                    const Icon = p.icon
+                    return (
+                      <span
+                        key={pv}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border"
+                        style={{ color: p.color, borderColor: `${p.color}30`, backgroundColor: `${p.color}10` }}
+                      >
+                        <Icon size={12} />
+                        {p.label}
+                      </span>
+                    )
+                  })}
+                  {contentTypes.map(t => (
+                    <span key={t} className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-blanc-casse text-bleu-nuit/60 border border-gris-leger/30">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                {idea.scheduled_date && (
+                  <div className="flex items-center gap-1.5 text-sm text-prune">
+                    <CalendarDays size={14} />
+                    <span>Planifié le {new Date(idea.scheduled_date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  </div>
+                )}
+
+                {/* Like details */}
+                {(idea.liked_by?.length || 0) > 0 && (
+                  <div className="flex items-center gap-2 pt-2 border-t border-gris-leger/20">
+                    <Heart size={14} className="text-error" fill="currentColor" />
+                    <span className="text-xs text-bleu-nuit/50">
+                      {idea.liked_by.length} like{idea.liked_by.length > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-3 border-t border-gris-leger/30 bg-blanc-casse/50 flex items-center gap-3 text-xs text-bleu-nuit/40">
+                <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>
+                <span>·</span>
+                <span>{timeAgo(idea.created_at)}</span>
+                {idea.updated_at !== idea.created_at && (
+                  <>
+                    <span>·</span>
+                    <span>modifié {timeAgo(idea.updated_at)}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Content */}
-      {filteredIdeas.length === 0 ? (
+      {sortedFilteredIdeas.length === 0 ? (
         <div className="bg-white rounded-lg border border-gris-leger/30 p-12 text-center">
           <Lightbulb size={40} className="mx-auto text-bleu-nuit/20 mb-4" />
           <p className="text-bleu-nuit/50 text-sm mb-4">
@@ -899,7 +1314,12 @@ export default function IdeesContenusPage() {
       ) : viewMode === 'board' ? (
         <div className="grid grid-cols-4 gap-4">
           {STATUSES.map(status => {
-            const columnIdeas = filteredIdeas.filter(i => i.status === status.value)
+            const columnIdeas = sortedFilteredIdeas
+              .filter(i => i.status === status.value)
+              .sort((a, b) => sortByLikes
+                ? (b.liked_by?.length || 0) - (a.liked_by?.length || 0)
+                : (a.position || 0) - (b.position || 0)
+              )
             const isOver = dragOverColumn === status.value
 
             return (
@@ -951,7 +1371,7 @@ export default function IdeesContenusPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filteredIdeas.map(idea => renderIdeaCard(idea, false))}
+          {sortedFilteredIdeas.map(idea => renderIdeaCard(idea, false))}
         </div>
       )}
 
@@ -991,7 +1411,6 @@ export default function IdeesContenusPage() {
         <div className="space-y-1">
           {weeks.map((weekDays, wi) => {
             const monthLabel = MONTH_NAMES[weekDays[0].getMonth()]
-            const weekNum = Math.ceil((weekDays[0].getDate()) / 7)
             return (
               <div key={wi}>
                 {(wi === 0 || weekDays[0].getMonth() !== weeks[wi - 1][0].getMonth()) && (

@@ -184,7 +184,7 @@ function ColorCard({ color }: { color: ColorDef }) {
         </p>
         <CopyableHex hex={color.hex} light={light} />
       </div>
-      <div className="bg-blanc-casse p-4">
+      <div className="bg-white p-4">
         <p className="text-xs text-bleu-nuit/70 leading-relaxed">{color.usage}</p>
         <p className="text-[10px] text-bleu-nuit/40 font-mono mt-2">RGB: {hexToRgb(color.hex)}</p>
       </div>
@@ -368,8 +368,6 @@ export default function CouleursPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {darkModeColors.map((c) => {
                 const textOnSwatch = isLightColor(c.hex) ? '#1A2B3C' : '#FFFFFF'
-                // Use a contrasting dark for the description area
-                const descBg = c.hex === '#0F1A24' ? '#162535' : '#0F1A24'
                 return (
                   <div key={c.hex} className="rounded-lg overflow-hidden border border-white/10">
                     <div
@@ -383,8 +381,8 @@ export default function CouleursPage() {
                         {c.hex}
                       </span>
                     </div>
-                    <div className="p-4" style={{ backgroundColor: descBg }}>
-                      <p className="text-xs text-white/70 leading-relaxed">{c.usage}</p>
+                    <div className="p-4" style={{ backgroundColor: '#2A4A5C' }}>
+                      <p className="text-xs text-white/80 leading-relaxed">{c.usage}</p>
                     </div>
                   </div>
                 )
@@ -414,7 +412,7 @@ export default function CouleursPage() {
                   <span className="font-display font-semibold text-sm" style={{ color: textOnSwatch }}>{c.name}</span>
                   <span className="text-[11px] font-mono" style={{ color: textOnSwatch, opacity: 0.7 }}>{c.hex}</span>
                 </div>
-                <div className="bg-blanc-casse p-4">
+                <div className="bg-white p-4">
                   <p className="text-xs text-bleu-nuit/70 leading-relaxed">{c.usage}</p>
                 </div>
               </div>

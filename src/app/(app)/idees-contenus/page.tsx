@@ -1376,7 +1376,7 @@ export default function IdeesContenusPage() {
       )}
 
       {/* ===== MILESTONE CALENDAR ===== */}
-      <div className="mt-10">
+      <div className="mt-10 bg-white rounded-lg border border-gris-leger/30 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <CalendarDays size={20} className="text-teal" />

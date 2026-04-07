@@ -233,38 +233,60 @@ function interpolateColor(hex1: string, hex2: string, steps: number): string[] {
   })
 }
 
-function ColorGradientCircles({ fromHex, toHex, fromName, toName, label }: { fromHex: string; toHex: string; fromName: string; toName: string; label?: string }) {
+function ColorGradientCircles({ fromHex, toHex, fromName, toName }: { fromHex: string; toHex: string; fromName: string; toName: string }) {
   const steps = interpolateColor(fromHex, toHex, 10)
-  const fromRgb = `${parseInt(fromHex.slice(1,3),16)} ; ${parseInt(fromHex.slice(3,5),16)} ; ${parseInt(fromHex.slice(5,7),16)}`
+  const fromR = parseInt(fromHex.slice(1,3),16)
+  const fromG = parseInt(fromHex.slice(3,5),16)
+  const fromB = parseInt(fromHex.slice(5,7),16)
+  const toR = parseInt(toHex.slice(1,3),16)
+  const toG = parseInt(toHex.slice(3,5),16)
+  const toB = parseInt(toHex.slice(5,7),16)
 
   return (
-    <div className="rounded-lg border border-[#2A4A5C]/15 shadow-sm bg-white overflow-hidden p-8">
-      {label && (
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-4">{label}</p>
-      )}
-      <div className="flex items-center gap-8">
-        <div className="shrink-0 text-right min-w-[140px]">
-          <p className="font-mono text-sm font-semibold text-bleu-nuit">{fromHex}</p>
-          <p className="text-xs text-bleu-nuit/50 mt-1">RVB : {fromRgb}</p>
+    <div className="rounded-lg border border-[#2A4A5C]/15 shadow-sm bg-white overflow-hidden">
+      {/* Gradient bar at top */}
+      <div className="h-2" style={{ background: `linear-gradient(to right, ${fromHex}, ${toHex})` }} />
+
+      <div className="p-8">
+        {/* Title row */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <span className="font-display text-lg font-semibold text-bleu-nuit">{fromName}</span>
+            <ArrowRight size={16} className="text-bleu-nuit/20" />
+            <span className="font-display text-lg font-semibold text-bleu-nuit">{toName}</span>
+          </div>
         </div>
-        <div className="flex items-center">
+
+        {/* Circles */}
+        <div className="flex items-center justify-center py-4">
           {steps.map((color, i) => (
             <div
               key={i}
-              className="w-16 h-16 rounded-full shrink-0"
+              className="rounded-full shrink-0 shadow-sm"
               style={{
+                width: 72,
+                height: 72,
                 backgroundColor: color,
-                marginLeft: i === 0 ? 0 : '-12px',
+                marginLeft: i === 0 ? 0 : -16,
                 zIndex: 10 - i,
+                border: '2px solid rgba(255,255,255,0.4)',
               }}
             />
           ))}
         </div>
-      </div>
-      <div className="mt-4 flex items-center gap-2">
-        <span className="text-sm font-display font-semibold text-bleu-nuit">{fromName}</span>
-        <ArrowRight size={14} className="text-bleu-nuit/30" />
-        <span className="text-sm font-display font-semibold text-bleu-nuit">{toName}</span>
+
+        {/* Color info row */}
+        <div className="flex items-center justify-between mt-6 pt-5 border-t border-gris-leger/30">
+          <div>
+            <p className="font-mono text-sm font-semibold" style={{ color: fromHex }}>{fromHex}</p>
+            <p className="text-[10px] text-bleu-nuit/40 mt-0.5">RVB : {fromR} ; {fromG} ; {fromB}</p>
+          </div>
+          <div className="flex-1 mx-8 h-px bg-gradient-to-r" style={{ backgroundImage: `linear-gradient(to right, ${fromHex}30, ${toHex}30)` }} />
+          <div className="text-right">
+            <p className="font-mono text-sm font-semibold" style={{ color: toHex }}>{toHex}</p>
+            <p className="text-[10px] text-bleu-nuit/40 mt-0.5">RVB : {toR} ; {toG} ; {toB}</p>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -344,60 +366,59 @@ export default function CouleursPage() {
           subtitle="Chaque couleur primaire possède une déclinaison plus claire utilisée comme couleur secondaire. Ces paires créent de la profondeur dans l'interface."
         />
 
-        <div className="space-y-6">
-          {/* Teal → Teal Clair */}
-          <ColorGradientCircles
-            fromHex="#1A8F8A"
-            toHex="#88C9C7"
-            fromName="Teal"
-            toName="Teal Clair"
-            label="Principale"
-          />
-
-          {/* Bleu Nuit → Bleu Nuit Clair */}
-          <ColorGradientCircles
-            fromHex="#1A2B3C"
-            toHex="#2A4A5C"
-            fromName="Bleu Nuit"
-            toName="Bleu Nuit Clair"
-            label="Principale"
-          />
-
-          {/* Prune variations */}
-          <ColorGradientCircles
-            fromHex="#7A4F6D"
-            toHex="#B88AA8"
-            fromName="Prune"
-            toName="Prune Clair"
-            label="Secondaires"
-          />
-
-          {/* Sauge & Prune — couleurs indépendantes */}
-          <div className="rounded-lg border border-[#2A4A5C]/15 shadow-sm bg-white overflow-hidden p-8">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-4">Secondaires</p>
-            <div className="flex items-center gap-6 mb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full shrink-0" style={{ backgroundColor: '#A8C280' }} />
-                <div>
-                  <p className="font-display text-sm font-semibold text-bleu-nuit">Sauge</p>
-                  <p className="font-mono text-xs text-bleu-nuit/50">#A8C280</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full shrink-0" style={{ backgroundColor: '#7A4F6D' }} />
-                <div>
-                  <p className="font-display text-sm font-semibold text-bleu-nuit">Prune</p>
-                  <p className="font-mono text-xs text-bleu-nuit/50">#7A4F6D</p>
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-bleu-nuit/60 leading-relaxed">La sauge et le prune ne sont pas des déclinaisons l&apos;une de l&apos;autre. Elles apportent chacune une dimension unique : la sauge pour la douceur naturelle, le prune pour l&apos;émancipation.</p>
+        {/* Primaires */}
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-3">Couleurs primaires</p>
+          <div className="space-y-4">
+            <ColorGradientCircles
+              fromHex="#1A8F8A"
+              toHex="#88C9C7"
+              fromName="Teal"
+              toName="Teal Clair"
+            />
+            <ColorGradientCircles
+              fromHex="#1A2B3C"
+              toHex="#2A4A5C"
+              fromName="Bleu Nuit"
+              toName="Bleu Nuit Clair"
+            />
+            <ColorGradientCircles
+              fromHex="#F2F5EE"
+              toHex="#FFFFFF"
+              fromName="Blanc Cassé"
+              toName="Blanc Pur"
+            />
           </div>
         </div>
 
-        <div className="mt-6 p-4 bg-teal/5 rounded-xl border border-teal/10">
+        {/* Secondaires */}
+        <div className="mb-4">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-teal mb-3 mt-8">Couleurs secondaires</p>
+          <div className="space-y-4">
+            <ColorGradientCircles
+              fromHex="#7A4F6D"
+              toHex="#B88AA8"
+              fromName="Prune"
+              toName="Prune Clair"
+            />
+            <ColorGradientCircles
+              fromHex="#A8C280"
+              toHex="#D4E4B8"
+              fromName="Sauge"
+              toName="Sauge Clair"
+            />
+            <ColorGradientCircles
+              fromHex="#1A8F8A"
+              toHex="#C8E6E5"
+              fromName="Teal"
+              toName="Teal Très Clair"
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 p-5 bg-teal/5 rounded-lg border border-teal/10">
           <p className="text-xs text-bleu-nuit/70 leading-relaxed">
-            <strong className="text-bleu-nuit">Règle importante :</strong> Les dégradés ne sont utilisés que dans la documentation de la marque pour illustrer les relations entre couleurs. Dans l&apos;interface réelle, chaque couleur est utilisée en aplat — pas de dégradés dans les composants UI.
+            <strong className="text-bleu-nuit">Règle importante :</strong> Les dégradés ci-dessus illustrent les variations de luminosité et de saturation de chaque couleur. Dans l&apos;interface réelle, chaque couleur est utilisée en aplat — les dégradés ne sont pas utilisés dans les composants UI.
           </p>
         </div>
       </section>

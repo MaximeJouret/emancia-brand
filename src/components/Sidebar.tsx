@@ -3,11 +3,19 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { User, Lightbulb, Play, X } from 'lucide-react'
+import {
+  User, Lightbulb, Play, X,
+  Fingerprint, ImageIcon, Palette, Type,
+  MessageSquareText, Smile, Blocks, Circle,
+  BarChart3, Code2, Layout, Scale,
+  ShieldCheck,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface NavItem {
   href: string
   label: string
+  icon: LucideIcon
 }
 
 interface NavSection {
@@ -24,34 +32,34 @@ const navSections: NavSection[] = [
   {
     title: 'Fondamentaux',
     items: [
-      { href: '/', label: 'Identité' },
-      { href: '/logo', label: 'Logo' },
-      { href: '/couleurs', label: 'Couleurs' },
-      { href: '/typographie', label: 'Typographie' },
+      { href: '/', label: 'Identité', icon: Fingerprint },
+      { href: '/logo', label: 'Logo', icon: ImageIcon },
+      { href: '/couleurs', label: 'Couleurs', icon: Palette },
+      { href: '/typographie', label: 'Typographie', icon: Type },
     ],
   },
   {
     title: 'Communication',
     items: [
-      { href: '/ton-editorial', label: 'Ton éditorial' },
+      { href: '/ton-editorial', label: 'Ton éditorial', icon: MessageSquareText },
     ],
   },
   {
     title: 'Outils',
     items: [
-      { href: '/icones', label: 'Icônes' },
-      { href: '/composants', label: 'Composants' },
-      { href: '/formes', label: 'Formes' },
-      { href: '/graphiques', label: 'Graphiques' },
-      { href: '/tokens', label: 'Tokens' },
+      { href: '/icones', label: 'Icônes', icon: Smile },
+      { href: '/composants', label: 'Composants', icon: Blocks },
+      { href: '/formes', label: 'Formes', icon: Circle },
+      { href: '/graphiques', label: 'Graphiques', icon: BarChart3 },
+      { href: '/tokens', label: 'Tokens', icon: Code2 },
     ],
   },
   {
     title: 'Mise en pratique',
     items: [
-      { href: '/contextes', label: 'Contextes' },
-      { href: '/regles', label: 'Do / Don\'t' },
-      { href: '/conformite', label: 'Conformité' },
+      { href: '/contextes', label: 'Contextes', icon: Layout },
+      { href: '/regles', label: 'Do / Don\'t', icon: Scale },
+      { href: '/conformite', label: 'Conformité', icon: ShieldCheck },
     ],
   },
 ]
@@ -105,22 +113,28 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
       <nav className="flex-1 p-4 overflow-y-auto" aria-label="Navigation principale">
         {navSections.map((section) => (
-          <div key={section.title} className="mb-4">
-            <p className="text-[10px] uppercase tracking-widest text-white/35 px-4 mb-1.5">{section.title}</p>
+          <div key={section.title} className="mb-5">
+            <p className="text-[10px] uppercase tracking-widest text-white/35 px-3 mb-2 font-medium">{section.title}</p>
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const isActive = pathname === item.href
+                const Icon = item.icon
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       onClick={handleNavClick}
-                      className={`block px-4 py-2 rounded-lg text-sm transition-colors ${
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all relative ${
                         isActive
                           ? 'bg-white/20 text-white font-medium'
-                          : 'text-white/70 hover:text-white hover:bg-white/10'
+                          : 'text-white/65 hover:text-white hover:bg-white/10'
                       }`}
                     >
+                      {/* Active indicator bar */}
+                      {isActive && (
+                        <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-white" />
+                      )}
+                      <Icon size={16} strokeWidth={isActive ? 2 : 1.5} className="shrink-0" />
                       {item.label}
                     </Link>
                   </li>
@@ -135,7 +149,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <Link
           href="/presentation"
           onClick={handleNavClick}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             pathname === '/presentation'
               ? 'bg-white text-teal shadow-sm'
               : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white'
@@ -147,7 +161,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <Link
           href="/profil"
           onClick={handleNavClick}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
+          className={`flex items-center gap-2.5 px-4 py-2 rounded-lg text-sm transition-colors ${
             pathname === '/profil'
               ? 'bg-white/20 text-white font-medium'
               : 'text-white/70 hover:text-white hover:bg-white/10'
@@ -156,7 +170,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           <User size={16} />
           Mon profil
         </Link>
-        <p className="text-xs text-white/30 px-4">v2.0 — Avril 2026</p>
+        <p className="text-xs text-white/30 px-4 pt-1">v2.0 — Avril 2026</p>
       </div>
     </aside>
   )
@@ -171,13 +185,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Mobile sidebar - overlay with backdrop */}
       {isOpen && (
         <div className="md:hidden" role="dialog" aria-modal="true">
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50 z-30"
             onClick={onClose}
             aria-hidden="true"
           />
-          {/* Sidebar */}
           {sidebarContent}
         </div>
       )}

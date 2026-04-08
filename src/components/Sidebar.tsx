@@ -46,6 +46,7 @@ const navSections: NavSection[] = [
     items: [
       { href: '/contextes', label: 'Contextes' },
       { href: '/regles', label: 'Do / Don\'t' },
+      { href: '/conformite', label: 'Conformité' },
     ],
   },
 ]

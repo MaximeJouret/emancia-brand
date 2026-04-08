@@ -5,8 +5,9 @@ import { PageHeader } from '@/components/PageHeader'
 import {
   Upload, FileText, CheckCircle2, XCircle, AlertTriangle,
   Palette, Type, Eye, Shield, RotateCcw, ChevronDown, ChevronUp,
-  Image as ImageIcon, Sparkles,
+  Image as ImageIcon, Sparkles, File,
 } from 'lucide-react'
+import JSZip from 'jszip'
 
 /* ─────────────────────────────────────────────
    Brand reference data
@@ -325,6 +326,60 @@ function runContrastChecks(fgHex: string, bgHex: string): CheckResult[] {
 }
 
 /* ─────────────────────────────────────────────
+   Document text extraction
+   ───────────────────────────────────────────── */
+
+async function extractTextFromPDF(file: File): Promise<string> {
+  // Dynamic import to avoid SSR issues (DOMMatrix not available on server)
+  const pdfjsLib = await import('pdfjs-dist')
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+
+  const arrayBuffer = await file.arrayBuffer()
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+  const textParts: string[] = []
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i)
+    const content = await page.getTextContent()
+    const pageText = content.items
+      .map((item: unknown) => (item as { str?: string }).str || '')
+      .join(' ')
+    textParts.push(pageText)
+  }
+
+  return textParts.join('\n\n')
+}
+
+async function extractTextFromPPTX(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer()
+  const zip = await JSZip.loadAsync(arrayBuffer)
+  const textParts: string[] = []
+
+  // PPTX slides are in ppt/slides/slide1.xml, slide2.xml, etc.
+  const slideFiles = Object.keys(zip.files)
+    .filter(name => /^ppt\/slides\/slide\d+\.xml$/.test(name))
+    .sort((a, b) => {
+      const numA = parseInt(a.match(/slide(\d+)/)?.[1] || '0')
+      const numB = parseInt(b.match(/slide(\d+)/)?.[1] || '0')
+      return numA - numB
+    })
+
+  for (const slidePath of slideFiles) {
+    const xml = await zip.files[slidePath].async('text')
+    // Extract text from <a:t> tags (PowerPoint text runs)
+    const matches = xml.match(/<a:t>([^<]*)<\/a:t>/g)
+    if (matches) {
+      const slideText = matches
+        .map(m => m.replace(/<\/?a:t>/g, ''))
+        .join(' ')
+      textParts.push(slideText)
+    }
+  }
+
+  return textParts.join('\n\n')
+}
+
+/* ─────────────────────────────────────────────
    Score calculation
    ───────────────────────────────────────────── */
 
@@ -367,7 +422,12 @@ export default function ConformitePage() {
   const [hasRun, setHasRun] = useState(false)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
   const [analyzing, setAnalyzing] = useState(false)
+  const [docName, setDocName] = useState<string | null>(null)
+  const [docText, setDocText] = useState('')
+  const [docLoading, setDocLoading] = useState(false)
+  const [docError, setDocError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const docInputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const toggleExpand = (id: string) => {
@@ -404,13 +464,49 @@ export default function ConformitePage() {
     reader.readAsDataURL(file)
   }, [])
 
+  const handleDocUpload = useCallback(async (file: File) => {
+    setDocLoading(true)
+    setDocError('')
+    setDocName(file.name)
+
+    try {
+      let extracted = ''
+      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+        extracted = await extractTextFromPDF(file)
+      } else if (
+        file.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+        file.name.endsWith('.pptx')
+      ) {
+        extracted = await extractTextFromPPTX(file)
+      } else {
+        setDocError('Format non supporté. Utilisez PDF ou PPTX.')
+        setDocLoading(false)
+        return
+      }
+
+      if (extracted.trim()) {
+        setDocText(extracted)
+        setText(prev => prev ? prev + '\n\n--- Contenu du document ---\n\n' + extracted : extracted)
+      } else {
+        setDocError('Aucun texte trouvé dans le document.')
+      }
+    } catch (err) {
+      console.error('Document extraction error:', err)
+      setDocError('Erreur lors de la lecture du document.')
+    }
+    setDocLoading(false)
+  }, [])
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
-    if (file && file.type.startsWith('image/')) {
+    if (!file) return
+    if (file.type.startsWith('image/')) {
       handleImageUpload(file)
+    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf') || file.name.endsWith('.pptx')) {
+      handleDocUpload(file)
     }
-  }, [handleImageUpload])
+  }, [handleImageUpload, handleDocUpload])
 
   const runAnalysis = () => {
     setAnalyzing(true)
@@ -449,7 +545,11 @@ export default function ConformitePage() {
     setResults([])
     setHasRun(false)
     setExpandedIds(new Set())
+    setDocName(null)
+    setDocText('')
+    setDocError('')
     if (fileInputRef.current) fileInputRef.current.value = ''
+    if (docInputRef.current) docInputRef.current.value = ''
   }
 
   const score = calculateScore(results)
@@ -532,11 +632,80 @@ export default function ConformitePage() {
             </div>
           </div>
 
+          {/* Document upload (PDF / PPTX) */}
+          <div>
+            <label className="block text-sm font-semibold text-bleu-nuit mb-2">
+              <File size={14} className="inline mr-1.5 -mt-0.5" />
+              Document à analyser
+            </label>
+            <div
+              onClick={() => docInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-lg transition-all cursor-pointer p-4 ${
+                docName
+                  ? 'border-teal/30 bg-teal/5'
+                  : 'border-gris-leger hover:border-teal/40 hover:bg-teal/5'
+              }`}
+            >
+              {docLoading ? (
+                <div className="flex items-center gap-3 justify-center py-2">
+                  <div className="w-4 h-4 border-2 border-teal border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-bleu-nuit/50">Extraction du texte...</span>
+                </div>
+              ) : docName ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-teal/10 flex items-center justify-center shrink-0">
+                    <File size={18} className="text-teal" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-bleu-nuit truncate">{docName}</p>
+                    <p className="text-[10px] text-bleu-nuit/40">
+                      {docText ? `${docText.split(/\s+/).length} mots extraits` : 'Extraction en cours...'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setDocName(null)
+                      setDocText('')
+                      setDocError('')
+                      if (docInputRef.current) docInputRef.current.value = ''
+                    }}
+                    className="text-bleu-nuit/30 hover:text-error transition-colors p-1"
+                  >
+                    <XCircle size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-2">
+                  <Upload size={24} className="mx-auto text-bleu-nuit/20 mb-2" />
+                  <p className="text-sm text-bleu-nuit/50">
+                    Glissez un fichier ou <span className="text-teal font-medium">parcourir</span>
+                  </p>
+                  <p className="text-[10px] text-bleu-nuit/30 mt-1">PDF, PowerPoint (.pptx)</p>
+                </div>
+              )}
+              <input
+                ref={docInputRef}
+                type="file"
+                accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleDocUpload(file)
+                }}
+              />
+            </div>
+            {docError && (
+              <p className="text-xs text-error mt-1.5">{docError}</p>
+            )}
+          </div>
+
           {/* Text input */}
           <div>
             <label className="block text-sm font-semibold text-bleu-nuit mb-2">
               <FileText size={14} className="inline mr-1.5 -mt-0.5" />
               Texte à vérifier
+              {docText && <span className="text-[10px] text-teal font-normal ml-2">(pré-rempli depuis le document)</span>}
             </label>
             <textarea
               value={text}

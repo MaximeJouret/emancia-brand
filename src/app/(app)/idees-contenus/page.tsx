@@ -4,10 +4,12 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Columns3, List, Heart, Lightbulb } from 'lucide-react'
 import {
-  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, StatsBar, PlatformFilterChips,
+  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, StatsBar, PlatformFilterChips, VoteGate,
   STATUSES,
   getIdeaPlatforms,
 } from '@/components/idees-contenus'
+
+const MIN_VOTES_REQUIRED = 3
 import type { ContentIdea } from '@/components/idees-contenus'
 
 export default function IdeesContenusPage() {
@@ -22,6 +24,7 @@ export default function IdeesContenusPage() {
   const [weekOffset, setWeekOffset] = useState(0)
   const [sortByLikes, setSortByLikes] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [showVoteGate, setShowVoteGate] = useState(false)
 
   // Drag state
   const [draggedId, setDraggedId] = useState<string | null>(null)
@@ -431,6 +434,29 @@ export default function IdeesContenusPage() {
     )
   }
 
+  // ---- Vote gate ----
+  const userLikeCount = userId
+    ? ideas.filter(i => i.user_id !== userId && (i.liked_by || []).includes(userId)).length
+    : 0
+  const hasEnoughVotes = userLikeCount >= MIN_VOTES_REQUIRED || ideas.length < MIN_VOTES_REQUIRED
+
+  const handleNewIdea = () => {
+    if (hasEnoughVotes) {
+      resetForm()
+      setShowForm(true)
+    } else {
+      setShowVoteGate(true)
+    }
+  }
+
+  // Auto-close vote gate when enough votes reached
+  useEffect(() => {
+    if (showVoteGate && hasEnoughVotes) {
+      setShowVoteGate(false)
+      setShowForm(true)
+    }
+  }, [showVoteGate, hasEnoughVotes])
+
   // ---- Expanded idea ----
   const expandedIdea = expandedId ? ideas.find(i => i.id === expandedId) : null
 
@@ -449,17 +475,26 @@ export default function IdeesContenusPage() {
             </p>
           </div>
           <button
-            onClick={() => { resetForm(); setShowForm(true) }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-teal text-white text-sm font-medium rounded-lg hover:bg-teal-dark transition-colors shrink-0"
+            onClick={handleNewIdea}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors shrink-0 ${
+              hasEnoughVotes
+                ? 'bg-teal text-white hover:bg-teal-dark'
+                : 'bg-bleu-nuit/10 text-bleu-nuit/50 hover:bg-bleu-nuit/15'
+            }`}
           >
             <Plus size={16} />
             Nouvelle idée
+            {!hasEnoughVotes && (
+              <span className="ml-1 text-[10px] bg-error/15 text-error px-1.5 py-0.5 rounded-full font-semibold">
+                {MIN_VOTES_REQUIRED - userLikeCount} votes
+              </span>
+            )}
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <StatsBar ideas={ideas} />
+      <StatsBar ideas={ideas} userId={userId} minVotes={MIN_VOTES_REQUIRED} />
 
       {/* Filters + View toggle */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
@@ -538,6 +573,18 @@ export default function IdeesContenusPage() {
         />
       )}
 
+      {/* Vote gate modal */}
+      {showVoteGate && userId && (
+        <VoteGate
+          ideas={ideas}
+          userId={userId}
+          minVotes={MIN_VOTES_REQUIRED}
+          userLikeCount={userLikeCount}
+          onLike={handleLike}
+          onClose={() => setShowVoteGate(false)}
+        />
+      )}
+
       {/* Expanded card modal */}
       {expandedIdea && (
         <IdeaDetail
@@ -561,7 +608,7 @@ export default function IdeesContenusPage() {
           </p>
           {ideas.length === 0 && (
             <button
-              onClick={() => { resetForm(); setShowForm(true) }}
+              onClick={handleNewIdea}
               className="inline-flex items-center gap-2 px-4 py-2 bg-teal text-white text-sm font-medium rounded-lg hover:bg-teal-dark transition-colors"
             >
               <Plus size={14} />

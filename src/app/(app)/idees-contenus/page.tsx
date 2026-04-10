@@ -418,19 +418,20 @@ export default function IdeesContenusPage() {
       created_at: new Date().toISOString(),
     }
 
-    // Optimistic update
+    // Optimistic update — use callback to get latest state and persist from it
+    let commentsToSave: IdeaComment[] = []
     setIdeas(prev => prev.map(i => {
       if (i.id !== ideaId) return i
-      return { ...i, comments: [...(i.comments || []), newComment] }
+      const updated = [...(i.comments || []), newComment]
+      commentsToSave = updated
+      return { ...i, comments: updated }
     }))
 
-    // Try to persist to Supabase
+    // Persist to Supabase with the complete comments array
     try {
-      const idea = ideas.find(i => i.id === ideaId)
-      const updatedComments = [...(idea?.comments || []), newComment]
       const { error } = await supabase
         .from('content_ideas')
-        .update({ comments: updatedComments, updated_at: new Date().toISOString() })
+        .update({ comments: commentsToSave, updated_at: new Date().toISOString() })
         .eq('id', ideaId)
 
       if (error) {

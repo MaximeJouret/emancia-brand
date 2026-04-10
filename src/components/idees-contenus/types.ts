@@ -1,6 +1,14 @@
 import { Camera, Play, Briefcase, Video, MessageCircle } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
+export interface IdeaComment {
+  id: string
+  user_id: string
+  user_name: string
+  text: string
+  created_at: string
+}
+
 export interface ContentIdea {
   id: string
   user_id: string
@@ -20,6 +28,7 @@ export interface ContentIdea {
   scheduled_date: string | null
   liked_by: string[]
   position: number
+  comments: IdeaComment[]
   created_at: string
   updated_at: string
 }
@@ -113,6 +122,7 @@ export const STATUSES: StatusConfig[] = [
   { value: 'valide', label: 'Validé', bg: 'bg-teal/10', text: 'text-teal', dot: 'bg-teal', color: '#1A8F8A', headerBg: 'bg-teal/10', borderColor: 'border-teal/20' },
   { value: 'en_cours', label: 'En cours', bg: 'bg-warning/10', text: 'text-warning', dot: 'bg-warning', color: '#F0A500', headerBg: 'bg-warning/10', borderColor: 'border-warning/20' },
   { value: 'publie', label: 'Publié', bg: 'bg-success/10', text: 'text-success', dot: 'bg-success', color: '#5A8A4A', headerBg: 'bg-success/10', borderColor: 'border-success/20' },
+  { value: 'archive', label: 'Archivé', bg: 'bg-bleu-nuit/5', text: 'text-bleu-nuit/40', dot: 'bg-bleu-nuit/30', color: '#8899AA', headerBg: 'bg-bleu-nuit/5', borderColor: 'border-bleu-nuit/10' },
 ]
 
 export const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']

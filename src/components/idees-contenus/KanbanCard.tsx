@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pencil, Trash2, ExternalLink, GripVertical, CalendarDays, Heart } from 'lucide-react'
+import { Pencil, Trash2, ExternalLink, GripVertical, CalendarDays, Heart, Archive, Copy } from 'lucide-react'
 import type { ContentIdea } from './types'
 import { getStatusInfo, getPlatformInfo, getPillarInfo, getEffortInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
 import { Linkify } from './Linkify'
@@ -20,6 +20,8 @@ interface KanbanCardProps {
   onEdit: (idea: ContentIdea) => void
   onDelete: (ideaId: string) => void
   onLike: (ideaId: string) => void
+  onArchive?: (ideaId: string) => void
+  onDuplicate?: (idea: ContentIdea) => void
 }
 
 function PlatformBadges({ idea }: { idea: ContentIdea }) {
@@ -117,7 +119,7 @@ export function KanbanCard({
   idea, compact = false, userId, draggedId,
   dragOverCardId, dragOverCardPosition,
   onDragStart, onDragEnd, onCardDragOver, onCardDragLeave, onCardDrop,
-  onExpand, onEdit, onDelete, onLike,
+  onExpand, onEdit, onDelete, onLike, onArchive, onDuplicate,
 }: KanbanCardProps) {
   const isOwner = userId === idea.user_id
   const isDropTarget = dragOverCardId === idea.id && draggedId !== idea.id
@@ -156,24 +158,44 @@ export function KanbanCard({
             <EffortBadge idea={idea} />
             <div className="flex items-center gap-0.5 ml-auto">
               <LikeButton idea={idea} userId={userId} size="sm" onLike={onLike} />
-              {isOwner && (
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                {onDuplicate && userId && (
                   <button
-                    onClick={(e) => { e.stopPropagation(); onEdit(idea) }}
+                    onClick={(e) => { e.stopPropagation(); onDuplicate(idea) }}
                     className="p-1 rounded text-bleu-nuit/30 hover:text-teal hover:bg-teal/5 transition-colors"
-                    title="Modifier"
+                    title="Dupliquer"
                   >
-                    <Pencil size={11} />
+                    <Copy size={11} />
                   </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onDelete(idea.id) }}
-                    className="p-1 rounded text-bleu-nuit/30 hover:text-error hover:bg-error/5 transition-colors"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={11} />
-                  </button>
-                </div>
-              )}
+                )}
+                {isOwner && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEdit(idea) }}
+                      className="p-1 rounded text-bleu-nuit/30 hover:text-teal hover:bg-teal/5 transition-colors"
+                      title="Modifier"
+                    >
+                      <Pencil size={11} />
+                    </button>
+                    {isOwner && idea.status === 'publie' && onArchive && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onArchive(idea.id) }}
+                        className="p-1 rounded text-bleu-nuit/30 hover:text-bleu-nuit/60 hover:bg-bleu-nuit/5 transition-colors"
+                        title="Archiver"
+                      >
+                        <Archive size={11} />
+                      </button>
+                    )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDelete(idea.id) }}
+                      className="p-1 rounded text-bleu-nuit/30 hover:text-error hover:bg-error/5 transition-colors"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -273,24 +295,44 @@ export function KanbanCard({
 
           <div className="flex items-center gap-1 shrink-0">
             <LikeButton idea={idea} userId={userId} size="md" onLike={onLike} />
-            {isOwner && (
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {onDuplicate && userId && (
                 <button
-                  onClick={() => onEdit(idea)}
+                  onClick={() => onDuplicate(idea)}
                   className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
-                  title="Modifier"
+                  title="Dupliquer"
                 >
-                  <Pencil size={14} />
+                  <Copy size={14} />
                 </button>
-                <button
-                  onClick={() => onDelete(idea.id)}
-                  className="p-2 rounded-lg text-bleu-nuit/40 hover:text-error hover:bg-error/5 transition-colors"
-                  title="Supprimer"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            )}
+              )}
+              {isOwner && (
+                <>
+                  <button
+                    onClick={() => onEdit(idea)}
+                    className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
+                    title="Modifier"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                  {idea.status === 'publie' && onArchive && (
+                    <button
+                      onClick={() => onArchive(idea.id)}
+                      className="p-2 rounded-lg text-bleu-nuit/40 hover:text-bleu-nuit/60 hover:bg-bleu-nuit/5 transition-colors"
+                      title="Archiver"
+                    >
+                      <Archive size={14} />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onDelete(idea.id)}
+                    className="p-2 rounded-lg text-bleu-nuit/40 hover:text-error hover:bg-error/5 transition-colors"
+                    title="Supprimer"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

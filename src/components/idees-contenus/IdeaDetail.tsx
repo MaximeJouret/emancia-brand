@@ -1,9 +1,10 @@
-import { Pencil, Trash2, X, ExternalLink, CalendarDays, Heart } from 'lucide-react'
+import { Pencil, Trash2, X, ExternalLink, CalendarDays, Heart, Copy } from 'lucide-react'
 import type { ContentIdea } from './types'
 import { AUDIENCES } from './types'
 import { getStatusInfo, getPlatformInfo, getPillarInfo, getEffortInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
 import { LikeButton } from './KanbanCard'
 import { Linkify } from './Linkify'
+import { CommentSection } from './CommentSection'
 
 interface IdeaDetailProps {
   idea: ContentIdea
@@ -12,9 +13,11 @@ interface IdeaDetailProps {
   onEdit: (idea: ContentIdea) => void
   onDelete: (ideaId: string) => void
   onLike: (ideaId: string) => void
+  onDuplicate?: (idea: ContentIdea) => void
+  onAddComment?: (ideaId: string, text: string) => void
 }
 
-export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: IdeaDetailProps) {
+export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike, onDuplicate, onAddComment }: IdeaDetailProps) {
   const status = getStatusInfo(idea.status)
   const isOwner = userId === idea.user_id
   const platforms = getIdeaPlatforms(idea)
@@ -29,7 +32,7 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: 
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden"
+        className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gris-leger/30">
@@ -41,6 +44,15 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: 
             <LikeButton idea={idea} userId={userId} size="md" onLike={onLike} />
           </div>
           <div className="flex items-center gap-1">
+            {onDuplicate && userId && (
+              <button
+                onClick={() => { onClose(); onDuplicate(idea) }}
+                className="p-2 rounded-lg text-bleu-nuit/40 hover:text-teal hover:bg-teal/5 transition-colors"
+                title="Dupliquer"
+              >
+                <Copy size={14} />
+              </button>
+            )}
             {isOwner && (
               <>
                 <button
@@ -155,6 +167,13 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: 
             </div>
           )}
         </div>
+
+        {onAddComment && (
+          <CommentSection
+            comments={idea.comments || []}
+            onAddComment={(text) => onAddComment(idea.id, text)}
+          />
+        )}
 
         <div className="px-6 py-3 border-t border-gris-leger/30 bg-blanc-casse/50 flex items-center gap-3 text-xs text-bleu-nuit/40">
           <span>{idea.user_name || idea.user_email?.split('@')[0]}</span>

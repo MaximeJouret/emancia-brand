@@ -487,73 +487,77 @@ export default function IdeesContenusPage() {
       {/* Stats */}
       <StatsBar ideas={ideas} />
 
-      {/* Filters + View toggle */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <PlatformFilterChips selected={filterPlatforms} onChange={setFilterPlatforms} />
-
-        <div className="h-4 w-px bg-gris-leger/30 mx-1" />
-
-        {/* Pillar filter */}
-        <div className="flex items-center gap-1">
-          {PILLARS.slice(0, 5).map(p => (
+      {/* Filters */}
+      <div className="bg-white rounded-lg border border-gris-leger/30 p-4 mb-6 space-y-3">
+        {/* Row 1: Plateformes + View toggle */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-wrap flex-1">
+            <span className="text-[10px] uppercase tracking-wider text-bleu-nuit/40 font-medium shrink-0">Plateformes</span>
+            <PlatformFilterChips selected={filterPlatforms} onChange={setFilterPlatforms} />
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
             <button
-              key={p.value}
-              onClick={() => setFilterPillar(filterPillar === p.value ? null : p.value)}
-              className={`px-2 py-1 rounded-md text-[11px] font-medium transition-all border ${
-                filterPillar === p.value
-                  ? 'border-current bg-current/10'
-                  : 'border-transparent text-bleu-nuit/40 hover:text-bleu-nuit/60'
+              onClick={() => setSortByLikes(!sortByLikes)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all border ${
+                sortByLikes
+                  ? 'border-error/30 bg-error/5 text-error'
+                  : 'border-gris-leger/50 text-bleu-nuit/40 hover:border-error/20 hover:text-error/60'
               }`}
-              style={filterPillar === p.value ? { color: p.color } : undefined}
-              title={p.label}
             >
-              {p.emoji}
+              <Heart size={12} fill={sortByLikes ? 'currentColor' : 'none'} />
+              Likes
             </button>
-          ))}
+            <div className="flex items-center gap-0.5 bg-blanc-casse rounded-lg border border-gris-leger/30 p-0.5">
+              <button
+                onClick={() => setViewMode('board')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === 'board' ? 'bg-teal text-white' : 'text-bleu-nuit/50 hover:text-bleu-nuit'
+                }`}
+              >
+                <Columns3 size={13} />
+                Board
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  viewMode === 'list' ? 'bg-teal text-white' : 'text-bleu-nuit/50 hover:text-bleu-nuit'
+                }`}
+              >
+                <List size={13} />
+                Liste
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="h-4 w-px bg-gris-leger/30 mx-1" />
-
-        <button
-          onClick={() => setSortByLikes(!sortByLikes)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all border ${
-            sortByLikes
-              ? 'border-error/30 bg-error/5 text-error'
-              : 'border-gris-leger/50 text-bleu-nuit/40 hover:border-error/20 hover:text-error/60'
-          }`}
-        >
-          <Heart size={12} fill={sortByLikes ? 'currentColor' : 'none'} />
-          Plus likées
-        </button>
-
-        {hasActiveFilters && (
-          <button
-            onClick={() => { setFilterPlatforms([]); setFilterPillar(null) }}
-            className="text-xs text-bleu-nuit/40 hover:text-bleu-nuit/70 transition-colors underline"
-          >
-            Tout afficher
-          </button>
-        )}
-
-        <div className="flex items-center gap-1 ml-auto bg-white rounded-lg border border-gris-leger/30 p-0.5">
-          <button
-            onClick={() => setViewMode('board')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-              viewMode === 'board' ? 'bg-teal text-white' : 'text-bleu-nuit/50 hover:text-bleu-nuit'
-            }`}
-          >
-            <Columns3 size={13} />
-            Board
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-              viewMode === 'list' ? 'bg-teal text-white' : 'text-bleu-nuit/50 hover:text-bleu-nuit'
-            }`}
-          >
-            <List size={13} />
-            Liste
-          </button>
+        {/* Row 2: Piliers */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-[10px] uppercase tracking-wider text-bleu-nuit/40 font-medium shrink-0">Piliers</span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {PILLARS.map(p => (
+              <button
+                key={p.value}
+                onClick={() => setFilterPillar(filterPillar === p.value ? null : p.value)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-all border ${
+                  filterPillar === p.value
+                    ? 'border-current bg-current/10'
+                    : 'border-gris-leger/40 text-bleu-nuit/50 hover:border-bleu-nuit/20'
+                }`}
+                style={filterPillar === p.value ? { color: p.color } : undefined}
+              >
+                <span>{p.emoji}</span>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          {hasActiveFilters && (
+            <button
+              onClick={() => { setFilterPlatforms([]); setFilterPillar(null) }}
+              className="ml-auto text-xs text-bleu-nuit/40 hover:text-bleu-nuit/70 transition-colors underline shrink-0"
+            >
+              Réinitialiser
+            </button>
+          )}
         </div>
       </div>
 

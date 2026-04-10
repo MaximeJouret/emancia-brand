@@ -1,4 +1,4 @@
-import { PLATFORMS, STATUSES } from './types'
+import { PLATFORMS, STATUSES, PILLARS, EFFORTS } from './types'
 import type { ContentIdea } from './types'
 
 export function getStatusInfo(status: string) {
@@ -7,6 +7,14 @@ export function getStatusInfo(status: string) {
 
 export function getPlatformInfo(platform: string) {
   return PLATFORMS.find(p => p.value === platform)
+}
+
+export function getPillarInfo(pillar: string) {
+  return PILLARS.find(p => p.value === pillar)
+}
+
+export function getEffortInfo(effort: string) {
+  return EFFORTS.find(e => e.value === effort)
 }
 
 export function getIdeaPlatforms(idea: ContentIdea): string[] {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pencil, Trash2, ExternalLink, GripVertical, CalendarDays, Heart } from 'lucide-react'
 import type { ContentIdea } from './types'
-import { getStatusInfo, getPlatformInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
+import { getStatusInfo, getPlatformInfo, getPillarInfo, getEffortInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
 import { Linkify } from './Linkify'
 
 interface KanbanCardProps {
@@ -59,6 +59,37 @@ function ContentTypeBadges({ idea }: { idea: ContentIdea }) {
   )
 }
 
+function PillarBadge({ idea, size = 'sm' }: { idea: ContentIdea; size?: 'sm' | 'md' }) {
+  const pillar = getPillarInfo(idea.pillar)
+  if (!pillar) return null
+  return (
+    <span
+      className={`inline-flex items-center gap-1 font-medium rounded-md border ${
+        size === 'sm' ? 'text-[9px] px-1 py-0.5' : 'text-[11px] px-1.5 py-0.5'
+      }`}
+      style={{ color: pillar.color, borderColor: `${pillar.color}30`, backgroundColor: `${pillar.color}08` }}
+      title={pillar.label}
+    >
+      <span>{pillar.emoji}</span>
+      {size === 'md' && pillar.label}
+    </span>
+  )
+}
+
+function EffortBadge({ idea }: { idea: ContentIdea }) {
+  const effort = getEffortInfo(idea.effort)
+  if (!effort) return null
+  return (
+    <span
+      className="text-[9px] px-1 py-0.5 rounded font-medium"
+      style={{ color: effort.color, backgroundColor: `${effort.color}12` }}
+      title={`Effort : ${effort.label}`}
+    >
+      {effort.icon}
+    </span>
+  )
+}
+
 function LikeButton({ idea, userId, size = 'sm', onLike }: { idea: ContentIdea; userId: string | null; size?: 'sm' | 'md'; onLike: (id: string) => void }) {
   const likeCount = idea.liked_by?.length || 0
   const isLiked = userId ? (idea.liked_by || []).includes(userId) : false
@@ -80,7 +111,7 @@ function LikeButton({ idea, userId, size = 'sm', onLike }: { idea: ContentIdea; 
   )
 }
 
-export { LikeButton, PlatformBadges, ContentTypeBadges }
+export { LikeButton, PlatformBadges, ContentTypeBadges, PillarBadge, EffortBadge }
 
 export function KanbanCard({
   idea, compact = false, userId, draggedId,
@@ -119,9 +150,10 @@ export function KanbanCard({
 
       {compact ? (
         <div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-1.5 mb-2 flex-wrap">
             <PlatformBadges idea={idea} />
-            <ContentTypeBadges idea={idea} />
+            <PillarBadge idea={idea} size="sm" />
+            <EffortBadge idea={idea} />
             <div className="flex items-center gap-0.5 ml-auto">
               <LikeButton idea={idea} userId={userId} size="sm" onLike={onLike} />
               {isOwner && (
@@ -191,6 +223,8 @@ export function KanbanCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-bleu-nuit truncate">{idea.title}</h3>
+              <PillarBadge idea={idea} size="md" />
+              <EffortBadge idea={idea} />
               <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusInfo(idea.status).bg} ${getStatusInfo(idea.status).text}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${getStatusInfo(idea.status).dot}`} />
                 {getStatusInfo(idea.status).label}

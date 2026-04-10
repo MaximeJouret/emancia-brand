@@ -4,12 +4,10 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Columns3, List, Heart, Lightbulb } from 'lucide-react'
 import {
-  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, StatsBar, PlatformFilterChips, VoteGate,
-  STATUSES,
+  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, StatsBar, PlatformFilterChips,
+  STATUSES, PILLARS,
   getIdeaPlatforms,
 } from '@/components/idees-contenus'
-
-const MIN_VOTES_REQUIRED = 3
 import type { ContentIdea } from '@/components/idees-contenus'
 
 export default function IdeesContenusPage() {
@@ -19,12 +17,12 @@ export default function IdeesContenusPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [filterPlatforms, setFilterPlatforms] = useState<string[]>([])
+  const [filterPillar, setFilterPillar] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'board' | 'list'>('board')
   const [error, setError] = useState('')
   const [weekOffset, setWeekOffset] = useState(0)
   const [sortByLikes, setSortByLikes] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [showVoteGate, setShowVoteGate] = useState(false)
 
   // Drag state
   const [draggedId, setDraggedId] = useState<string | null>(null)
@@ -39,6 +37,9 @@ export default function IdeesContenusPage() {
   const [formDescription, setFormDescription] = useState('')
   const [formPlatforms, setFormPlatforms] = useState<string[]>(['instagram'])
   const [formContentTypes, setFormContentTypes] = useState<string[]>(['Post image'])
+  const [formPillar, setFormPillar] = useState('budget')
+  const [formEffort, setFormEffort] = useState('medium')
+  const [formAudience, setFormAudience] = useState<string[]>(['tous'])
   const [formLink, setFormLink] = useState('')
   const [formStatus, setFormStatus] = useState('idee')
 
@@ -69,6 +70,9 @@ export default function IdeesContenusPage() {
         position: typeof d.position === 'number' ? d.position : 0,
         platforms: Array.isArray(d.platforms) ? d.platforms as string[] : [],
         content_types: Array.isArray(d.content_types) ? d.content_types as string[] : [],
+        pillar: typeof d.pillar === 'string' ? d.pillar : '',
+        effort: typeof d.effort === 'string' ? d.effort : '',
+        audience: Array.isArray(d.audience) ? d.audience as string[] : [],
       })) as ContentIdea[])
       setError('')
     }
@@ -93,6 +97,9 @@ export default function IdeesContenusPage() {
     setFormLink('')
     setFormPlatforms(['instagram'])
     setFormContentTypes(['Post image'])
+    setFormPillar('budget')
+    setFormEffort('medium')
+    setFormAudience(['tous'])
     setFormStatus('idee')
     setShowForm(false)
     setEditingId(null)
@@ -105,6 +112,9 @@ export default function IdeesContenusPage() {
     setFormPlatforms(getIdeaPlatforms(idea))
     const types = idea.content_types?.length > 0 ? idea.content_types : idea.content_type ? [idea.content_type] : ['Post image']
     setFormContentTypes(types)
+    setFormPillar(idea.pillar || 'budget')
+    setFormEffort(idea.effort || 'medium')
+    setFormAudience(idea.audience?.length > 0 ? idea.audience : ['tous'])
     setFormStatus(idea.status)
     setEditingId(idea.id)
     setShowForm(true)
@@ -126,6 +136,9 @@ export default function IdeesContenusPage() {
       platforms: formPlatforms,
       content_type: formContentTypes[0] || 'Post image',
       content_types: formContentTypes,
+      pillar: formPillar,
+      effort: formEffort,
+      audience: formAudience,
       status: formStatus,
       user_id: user.id,
       user_email: user.email || '',
@@ -415,28 +428,17 @@ export default function IdeesContenusPage() {
   // ---- Filtering & sorting ----
 
   const filteredIdeas = ideas.filter(idea => {
-    if (filterPlatforms.length === 0) return true
-    const ideaPlatforms = getIdeaPlatforms(idea)
-    return filterPlatforms.some(fp => ideaPlatforms.includes(fp))
+    if (filterPlatforms.length > 0) {
+      const ideaPlatforms = getIdeaPlatforms(idea)
+      if (!filterPlatforms.some(fp => ideaPlatforms.includes(fp))) return false
+    }
+    if (filterPillar && idea.pillar !== filterPillar) return false
+    return true
   })
 
   const sortedFilteredIdeas = sortByLikes
     ? [...filteredIdeas].sort((a, b) => (b.liked_by?.length || 0) - (a.liked_by?.length || 0))
     : filteredIdeas
-
-  // ---- Vote gate ----
-  const userLikeCount = userId
-    ? ideas.filter(i => i.user_id !== userId && (i.liked_by || []).includes(userId)).length
-    : 0
-  const hasEnoughVotes = userLikeCount >= MIN_VOTES_REQUIRED || ideas.length < MIN_VOTES_REQUIRED
-
-  // Auto-close vote gate when enough votes reached
-  useEffect(() => {
-    if (showVoteGate && hasEnoughVotes) {
-      setShowVoteGate(false)
-      setShowForm(true)
-    }
-  }, [showVoteGate, hasEnoughVotes])
 
   // ---- Loading ----
 
@@ -449,16 +451,14 @@ export default function IdeesContenusPage() {
   }
 
   const handleNewIdea = () => {
-    if (hasEnoughVotes) {
-      resetForm()
-      setShowForm(true)
-    } else {
-      setShowVoteGate(true)
-    }
+    resetForm()
+    setShowForm(true)
   }
 
   // ---- Expanded idea ----
   const expandedIdea = expandedId ? ideas.find(i => i.id === expandedId) : null
+
+  const hasActiveFilters = filterPlatforms.length > 0 || filterPillar !== null
 
   return (
     <div>
@@ -476,38 +476,41 @@ export default function IdeesContenusPage() {
           </div>
           <button
             onClick={handleNewIdea}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors shrink-0 ${
-              hasEnoughVotes
-                ? 'bg-teal text-white hover:bg-teal-dark'
-                : 'bg-bleu-nuit/10 text-bleu-nuit/50 hover:bg-bleu-nuit/15'
-            }`}
+            className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors shrink-0 bg-teal text-white hover:bg-teal-dark"
           >
             <Plus size={16} />
             Nouvelle idée
-            {!hasEnoughVotes && (
-              <span className="ml-1 text-[10px] bg-error/15 text-error px-1.5 py-0.5 rounded-full font-semibold">
-                {MIN_VOTES_REQUIRED - userLikeCount} votes
-              </span>
-            )}
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <StatsBar ideas={ideas} userId={userId} minVotes={MIN_VOTES_REQUIRED} />
+      <StatsBar ideas={ideas} />
 
       {/* Filters + View toggle */}
       <div className="flex items-center gap-3 mb-6 flex-wrap">
         <PlatformFilterChips selected={filterPlatforms} onChange={setFilterPlatforms} />
 
-        {filterPlatforms.length > 0 && (
-          <button
-            onClick={() => setFilterPlatforms([])}
-            className="text-xs text-bleu-nuit/40 hover:text-bleu-nuit/70 transition-colors underline"
-          >
-            Tout afficher
-          </button>
-        )}
+        <div className="h-4 w-px bg-gris-leger/30 mx-1" />
+
+        {/* Pillar filter */}
+        <div className="flex items-center gap-1">
+          {PILLARS.slice(0, 5).map(p => (
+            <button
+              key={p.value}
+              onClick={() => setFilterPillar(filterPillar === p.value ? null : p.value)}
+              className={`px-2 py-1 rounded-md text-[11px] font-medium transition-all border ${
+                filterPillar === p.value
+                  ? 'border-current bg-current/10'
+                  : 'border-transparent text-bleu-nuit/40 hover:text-bleu-nuit/60'
+              }`}
+              style={filterPillar === p.value ? { color: p.color } : undefined}
+              title={p.label}
+            >
+              {p.emoji}
+            </button>
+          ))}
+        </div>
 
         <div className="h-4 w-px bg-gris-leger/30 mx-1" />
 
@@ -522,6 +525,15 @@ export default function IdeesContenusPage() {
           <Heart size={12} fill={sortByLikes ? 'currentColor' : 'none'} />
           Plus likées
         </button>
+
+        {hasActiveFilters && (
+          <button
+            onClick={() => { setFilterPlatforms([]); setFilterPillar(null) }}
+            className="text-xs text-bleu-nuit/40 hover:text-bleu-nuit/70 transition-colors underline"
+          >
+            Tout afficher
+          </button>
+        )}
 
         <div className="flex items-center gap-1 ml-auto bg-white rounded-lg border border-gris-leger/30 p-0.5">
           <button
@@ -561,27 +573,21 @@ export default function IdeesContenusPage() {
           formLink={formLink}
           formPlatforms={formPlatforms}
           formContentTypes={formContentTypes}
+          formPillar={formPillar}
+          formEffort={formEffort}
+          formAudience={formAudience}
           formStatus={formStatus}
           onTitleChange={setFormTitle}
           onDescriptionChange={setFormDescription}
           onLinkChange={setFormLink}
           onPlatformsChange={setFormPlatforms}
           onContentTypesChange={setFormContentTypes}
+          onPillarChange={setFormPillar}
+          onEffortChange={setFormEffort}
+          onAudienceChange={setFormAudience}
           onStatusChange={setFormStatus}
           onSubmit={handleSubmit}
           onCancel={resetForm}
-        />
-      )}
-
-      {/* Vote gate modal */}
-      {showVoteGate && userId && (
-        <VoteGate
-          ideas={ideas}
-          userId={userId}
-          minVotes={MIN_VOTES_REQUIRED}
-          userLikeCount={userLikeCount}
-          onLike={handleLike}
-          onClose={() => setShowVoteGate(false)}
         />
       )}
 

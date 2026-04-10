@@ -10,6 +10,9 @@ export interface ContentIdea {
   platforms: string[]
   content_type: string
   content_types: string[]
+  pillar: string
+  effort: string
+  audience: string[]
   title: string
   description: string
   link: string | null
@@ -39,6 +42,25 @@ export interface StatusConfig {
   borderColor: string
 }
 
+export interface PillarConfig {
+  value: string
+  label: string
+  emoji: string
+  color: string
+}
+
+export interface EffortConfig {
+  value: string
+  label: string
+  icon: string
+  color: string
+}
+
+export interface AudienceConfig {
+  value: string
+  label: string
+}
+
 export const PLATFORMS: PlatformConfig[] = [
   { value: 'instagram', label: 'Instagram', icon: Camera, color: '#E1306C' },
   { value: 'youtube', label: 'YouTube', icon: Play, color: '#FF0000' },
@@ -58,6 +80,32 @@ export const CONTENT_TYPES = [
   'Thread',
   'Live',
   'Autre',
+]
+
+export const PILLARS: PillarConfig[] = [
+  { value: 'budget', label: 'Budget & Épargne', emoji: '💰', color: '#1A8F8A' },
+  { value: 'investissement', label: 'Investissement', emoji: '📈', color: '#0A66C2' },
+  { value: 'dette', label: 'Gestion de dette', emoji: '🔓', color: '#7A4F6D' },
+  { value: 'arnaques', label: 'Arnaques & Pièges', emoji: '🛡️', color: '#E74C3C' },
+  { value: 'fiscalite', label: 'Fiscalité', emoji: '📋', color: '#F0A500' },
+  { value: 'mindset', label: 'Mindset financier', emoji: '🧠', color: '#A8C280' },
+  { value: 'actu', label: 'Actualité éco', emoji: '📰', color: '#1A2B3C' },
+  { value: 'temoignage', label: 'Témoignage', emoji: '🎤', color: '#E1306C' },
+]
+
+export const EFFORTS: EffortConfig[] = [
+  { value: 'quick', label: 'Rapide', icon: '⚡', color: '#A8C280' },
+  { value: 'medium', label: 'Moyen', icon: '⏱️', color: '#F0A500' },
+  { value: 'complex', label: 'Complexe', icon: '🎬', color: '#7A4F6D' },
+]
+
+export const AUDIENCES: AudienceConfig[] = [
+  { value: 'debutants', label: 'Débutants' },
+  { value: 'jeunes', label: 'Jeunes 18-25' },
+  { value: 'parents', label: 'Parents' },
+  { value: 'independants', label: 'Indépendants' },
+  { value: 'salaries', label: 'Salariés' },
+  { value: 'tous', label: 'Tout public' },
 ]
 
 export const STATUSES: StatusConfig[] = [

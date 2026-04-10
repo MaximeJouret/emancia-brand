@@ -1,6 +1,7 @@
 import { Pencil, Trash2, X, ExternalLink, CalendarDays, Heart } from 'lucide-react'
 import type { ContentIdea } from './types'
-import { getStatusInfo, getPlatformInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
+import { AUDIENCES } from './types'
+import { getStatusInfo, getPlatformInfo, getPillarInfo, getEffortInfo, getIdeaPlatforms, getIdeaContentTypes, timeAgo } from './utils'
 import { LikeButton } from './KanbanCard'
 import { Linkify } from './Linkify'
 
@@ -18,6 +19,9 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: 
   const isOwner = userId === idea.user_id
   const platforms = getIdeaPlatforms(idea)
   const contentTypes = getIdeaContentTypes(idea)
+  const pillar = getPillarInfo(idea.pillar)
+  const effort = getEffortInfo(idea.effort)
+  const audiences = (idea.audience || []).map(a => AUDIENCES.find(au => au.value === a)?.label).filter(Boolean)
 
   return (
     <div
@@ -66,6 +70,33 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike }: 
 
         <div className="px-6 py-5 space-y-4">
           <h3 className="font-display text-lg font-semibold text-bleu-nuit">{idea.title}</h3>
+
+          {/* Pillar + Effort + Audience */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {pillar && (
+              <span
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border"
+                style={{ color: pillar.color, borderColor: `${pillar.color}30`, backgroundColor: `${pillar.color}10` }}
+              >
+                <span>{pillar.emoji}</span>
+                {pillar.label}
+              </span>
+            )}
+            {effort && (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium"
+                style={{ color: effort.color, backgroundColor: `${effort.color}12` }}
+              >
+                <span>{effort.icon}</span>
+                {effort.label}
+              </span>
+            )}
+            {audiences.length > 0 && audiences.map(a => (
+              <span key={a} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-bleu-nuit/5 text-bleu-nuit/60">
+                {a}
+              </span>
+            ))}
+          </div>
 
           {idea.description && (
             <div className="text-sm text-bleu-nuit/70 leading-relaxed whitespace-pre-wrap">

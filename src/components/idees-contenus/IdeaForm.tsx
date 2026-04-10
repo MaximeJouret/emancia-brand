@@ -1,6 +1,6 @@
 import React from 'react'
 import { X, Check, MessageCircle } from 'lucide-react'
-import { PLATFORMS, CONTENT_TYPES, STATUSES } from './types'
+import { PLATFORMS, CONTENT_TYPES, STATUSES, PILLARS, EFFORTS, AUDIENCES } from './types'
 import { getPlatformInfo } from './utils'
 import { ChipSelect } from './ChipSelect'
 
@@ -11,12 +11,18 @@ interface IdeaFormProps {
   formLink: string
   formPlatforms: string[]
   formContentTypes: string[]
+  formPillar: string
+  formEffort: string
+  formAudience: string[]
   formStatus: string
   onTitleChange: (v: string) => void
   onDescriptionChange: (v: string) => void
   onLinkChange: (v: string) => void
   onPlatformsChange: (v: string[]) => void
   onContentTypesChange: (v: string[]) => void
+  onPillarChange: (v: string) => void
+  onEffortChange: (v: string) => void
+  onAudienceChange: (v: string[]) => void
   onStatusChange: (v: string) => void
   onSubmit: (e: React.FormEvent) => void
   onCancel: () => void
@@ -24,18 +30,18 @@ interface IdeaFormProps {
 
 export function IdeaForm({
   editingId, formTitle, formDescription, formLink,
-  formPlatforms, formContentTypes, formStatus,
+  formPlatforms, formContentTypes, formPillar, formEffort, formAudience, formStatus,
   onTitleChange, onDescriptionChange, onLinkChange,
-  onPlatformsChange, onContentTypesChange, onStatusChange,
+  onPlatformsChange, onContentTypesChange, onPillarChange, onEffortChange, onAudienceChange, onStatusChange,
   onSubmit, onCancel,
 }: IdeaFormProps) {
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <form
         onSubmit={onSubmit}
-        className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden"
+        className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gris-leger/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gris-leger/30 shrink-0">
           <h3 className="font-display text-lg font-semibold text-bleu-nuit">
             {editingId ? 'Modifier l\'idée' : 'Nouvelle idée de contenu'}
           </h3>
@@ -44,7 +50,7 @@ export function IdeaForm({
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto">
           <div>
             <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Titre *</label>
             <input
@@ -67,14 +73,60 @@ export function IdeaForm({
             />
           </div>
 
+          {/* Pillar + Effort row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Pilier</label>
+              <div className="flex flex-wrap gap-1.5">
+                {PILLARS.map(p => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => onPillarChange(p.value)}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all border ${
+                      formPillar === p.value
+                        ? 'border-current bg-current/10'
+                        : 'border-gris-leger/50 text-bleu-nuit/50 hover:border-bleu-nuit/20'
+                    }`}
+                    style={formPillar === p.value ? { color: p.color } : undefined}
+                  >
+                    <span>{p.emoji}</span>
+                    <span className="hidden sm:inline">{p.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Effort</label>
+              <div className="flex gap-1.5">
+                {EFFORTS.map(e => (
+                  <button
+                    key={e.value}
+                    type="button"
+                    onClick={() => onEffortChange(e.value)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border flex-1 justify-center ${
+                      formEffort === e.value
+                        ? 'border-current bg-current/10'
+                        : 'border-gris-leger/50 text-bleu-nuit/50 hover:border-bleu-nuit/20'
+                    }`}
+                    style={formEffort === e.value ? { color: e.color } : undefined}
+                  >
+                    <span>{e.icon}</span>
+                    {e.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Audience */}
           <div>
-            <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Lien <span className="text-bleu-nuit/30 font-normal">(optionnel)</span></label>
-            <input
-              value={formLink}
-              onChange={(e) => onLinkChange(e.target.value)}
-              placeholder="https://..."
-              type="url"
-              className="w-full px-4 py-2.5 rounded-lg border border-gris-leger text-sm text-bleu-nuit placeholder:text-bleu-nuit/30 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/10 transition-all"
+            <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Audience cible</label>
+            <ChipSelect
+              options={AUDIENCES.map(a => ({ value: a.value, label: a.label }))}
+              selected={formAudience}
+              onChange={onAudienceChange}
             />
           </div>
 
@@ -107,6 +159,17 @@ export function IdeaForm({
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Lien <span className="text-bleu-nuit/30 font-normal">(optionnel)</span></label>
+            <input
+              value={formLink}
+              onChange={(e) => onLinkChange(e.target.value)}
+              placeholder="https://..."
+              type="url"
+              className="w-full px-4 py-2.5 rounded-lg border border-gris-leger text-sm text-bleu-nuit placeholder:text-bleu-nuit/30 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/10 transition-all"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-bleu-nuit mb-1.5">Statut</label>
             <div className="flex gap-2">
               {STATUSES.map(s => (
@@ -128,7 +191,7 @@ export function IdeaForm({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gris-leger/30 bg-blanc-casse/50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gris-leger/30 bg-blanc-casse/50 shrink-0">
           <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-bleu-nuit/60 hover:text-bleu-nuit transition-colors">
             Annuler
           </button>

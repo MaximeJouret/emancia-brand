@@ -96,6 +96,27 @@ export default function IdeesContenusPage() {
     init()
   }, [fetchIdeas])
 
+  // ---- Realtime subscription ----
+  // Écoute les changements faits par TOUS les utilisateurs en temps réel
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel('content_ideas_realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'content_ideas' },
+        () => {
+          // Quand n'importe quel changement arrive, on recharge toutes les idées
+          fetchIdeas()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [fetchIdeas])
+
   // ---- Mobile detection ----
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)')
@@ -436,6 +457,12 @@ export default function IdeesContenusPage() {
 
       if (error) {
         console.warn('Comments not persisted (column may not exist):', error.message)
+        // Rollback optimistic update si la colonne n'existe pas
+        setIdeas(prev => prev.map(i => {
+          if (i.id !== ideaId) return i
+          return { ...i, comments: (i.comments || []).filter(c => c.id !== newComment.id) }
+        }))
+        setError('Les commentaires nécessitent une migration Supabase. Exécute : ALTER TABLE content_ideas ADD COLUMN comments jsonb DEFAULT \'[]\';')
       }
     } catch {
       console.warn('Comments not persisted — column may not exist in Supabase')

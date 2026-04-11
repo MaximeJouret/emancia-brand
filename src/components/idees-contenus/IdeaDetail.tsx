@@ -15,9 +15,11 @@ interface IdeaDetailProps {
   onLike: (ideaId: string) => void
   onDuplicate?: (idea: ContentIdea) => void
   onAddComment?: (ideaId: string, text: string) => void
+  onDeleteComment?: (ideaId: string, commentId: string) => void
+  onEditComment?: (ideaId: string, commentId: string, newText: string) => void
 }
 
-export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike, onDuplicate, onAddComment }: IdeaDetailProps) {
+export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike, onDuplicate, onAddComment, onDeleteComment, onEditComment }: IdeaDetailProps) {
   const status = getStatusInfo(idea.status)
   const isOwner = userId === idea.user_id
   const platforms = getIdeaPlatforms(idea)
@@ -171,7 +173,10 @@ export function IdeaDetail({ idea, userId, onClose, onEdit, onDelete, onLike, on
         {onAddComment && (
           <CommentSection
             comments={idea.comments || []}
+            userId={userId}
             onAddComment={(text) => onAddComment(idea.id, text)}
+            onDeleteComment={(commentId) => onDeleteComment?.(idea.id, commentId)}
+            onEditComment={(commentId, newText) => onEditComment?.(idea.id, commentId, newText)}
           />
         )}
 

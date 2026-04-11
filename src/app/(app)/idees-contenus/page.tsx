@@ -470,6 +470,42 @@ export default function IdeesContenusPage() {
     }
   }
 
+  const handleDeleteComment = async (ideaId: string, commentId: string) => {
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedComments = (currentIdea?.comments || []).filter(c => c.id !== commentId)
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, comments: updatedComments }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ comments: updatedComments, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Delete comment not persisted')
+    }
+  }
+
+  const handleEditComment = async (ideaId: string, commentId: string, newText: string) => {
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedComments = (currentIdea?.comments || []).map(c =>
+      c.id === commentId ? { ...c, text: newText } : c
+    )
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, comments: updatedComments }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ comments: updatedComments, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Edit comment not persisted')
+    }
+  }
+
   // ---- Scheduling ----
 
   const handleScheduleDate = async (ideaId: string, date: string | null) => {
@@ -860,6 +896,8 @@ export default function IdeesContenusPage() {
           onLike={handleLike}
           onDuplicate={handleDuplicate}
           onAddComment={handleAddComment}
+          onDeleteComment={handleDeleteComment}
+          onEditComment={handleEditComment}
         />
       )}
 

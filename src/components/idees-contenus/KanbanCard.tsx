@@ -233,6 +233,19 @@ export function KanbanCard({
             <span className="truncate">{idea.user_name || idea.user_email?.split('@')[0]}</span>
             <span>·</span>
             <span className="shrink-0">{timeAgo(idea.created_at)}</span>
+            {(idea.comments?.length > 0 || idea.takeaways?.length > 0 || idea.polls?.length > 0) && (
+              <div className="flex items-center gap-1.5 ml-auto">
+                {idea.comments?.length > 0 && (
+                  <span className="flex items-center gap-0.5" title={`${idea.comments.length} commentaire(s)`}>💬 {idea.comments.length}</span>
+                )}
+                {idea.takeaways?.length > 0 && (
+                  <span className="flex items-center gap-0.5" title={`${idea.takeaways.length} point(s) clé(s)`}>💡 {idea.takeaways.length}</span>
+                )}
+                {idea.polls?.length > 0 && (
+                  <span className="flex items-center gap-0.5" title="Sondage actif">📊</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       ) : (

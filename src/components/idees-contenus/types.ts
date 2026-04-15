@@ -9,6 +9,28 @@ export interface IdeaComment {
   created_at: string
 }
 
+export interface Takeaway {
+  id: string
+  user_id: string
+  user_name: string
+  text: string
+  created_at: string
+}
+
+export interface Poll {
+  id: string
+  question: string
+  options: PollOption[]
+  created_by: string
+  created_at: string
+}
+
+export interface PollOption {
+  id: string
+  label: string
+  votes: string[] // user_ids who voted
+}
+
 export interface ContentIdea {
   id: string
   user_id: string
@@ -29,6 +51,8 @@ export interface ContentIdea {
   liked_by: string[]
   position: number
   comments: IdeaComment[]
+  takeaways: Takeaway[]
+  polls: Poll[]
   created_at: string
   updated_at: string
 }

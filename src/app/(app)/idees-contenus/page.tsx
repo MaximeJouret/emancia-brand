@@ -2,15 +2,15 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Columns3, List, CalendarDays, Heart, Lightbulb, SlidersHorizontal, X, Search, Archive, Download, BarChart3 } from 'lucide-react'
+import { Plus, Columns3, List, CalendarDays, Heart, Lightbulb, SlidersHorizontal, X, Search, Archive, Download, BarChart3, Activity } from 'lucide-react'
 import {
-  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, PlatformFilterChips, Dashboard,
+  KanbanCard, IdeaDetail, IdeaForm, MilestoneCalendar, PlatformFilterChips, Dashboard, ActivityFeed,
   STATUSES, PILLARS,
   getIdeaPlatforms,
 } from '@/components/idees-contenus'
-import type { ContentIdea, IdeaComment } from '@/components/idees-contenus'
+import type { ContentIdea, IdeaComment, Takeaway, Poll } from '@/components/idees-contenus'
 
-type ViewMode = 'board' | 'list' | 'calendar' | 'dashboard'
+type ViewMode = 'board' | 'list' | 'calendar' | 'dashboard' | 'activity'
 
 export default function IdeesContenusPage() {
   const [ideas, setIdeas] = useState<ContentIdea[]>([])
@@ -80,6 +80,8 @@ export default function IdeesContenusPage() {
         effort: typeof d.effort === 'string' ? d.effort : '',
         audience: Array.isArray(d.audience) ? d.audience as string[] : [],
         comments: Array.isArray(d.comments) ? d.comments as IdeaComment[] : [],
+        takeaways: Array.isArray(d.takeaways) ? d.takeaways as Takeaway[] : [],
+        polls: Array.isArray(d.polls) ? d.polls as Poll[] : [],
       })) as ContentIdea[])
       setError('')
     }
@@ -506,6 +508,169 @@ export default function IdeesContenusPage() {
     }
   }
 
+  // ---- Takeaways ----
+
+  const handleAddTakeaway = async (ideaId: string, text: string) => {
+    if (!userId) return
+
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const newTakeaway: Takeaway = {
+      id: crypto.randomUUID(),
+      user_id: user.id,
+      user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonyme',
+      text,
+      created_at: new Date().toISOString(),
+    }
+
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const takeawaysToSave = [...(currentIdea?.takeaways || []), newTakeaway]
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, takeaways: takeawaysToSave }))
+
+    try {
+      const { error } = await supabase
+        .from('content_ideas')
+        .update({ takeaways: takeawaysToSave, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+
+      if (error) {
+        console.warn('Takeaways not persisted (column may not exist):', error.message)
+        setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, takeaways: (i.takeaways || []).filter(t => t.id !== newTakeaway.id) }))
+        setError('Les points clés nécessitent une migration Supabase. Exécute : ALTER TABLE content_ideas ADD COLUMN takeaways jsonb DEFAULT \'[]\';')
+      }
+    } catch {
+      console.warn('Takeaways not persisted — column may not exist in Supabase')
+    }
+  }
+
+  const handleDeleteTakeaway = async (ideaId: string, takeawayId: string) => {
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedTakeaways = (currentIdea?.takeaways || []).filter(t => t.id !== takeawayId)
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, takeaways: updatedTakeaways }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ takeaways: updatedTakeaways, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Delete takeaway not persisted')
+    }
+  }
+
+  const handleEditTakeaway = async (ideaId: string, takeawayId: string, newText: string) => {
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedTakeaways = (currentIdea?.takeaways || []).map(t =>
+      t.id === takeawayId ? { ...t, text: newText } : t
+    )
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, takeaways: updatedTakeaways }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ takeaways: updatedTakeaways, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Edit takeaway not persisted')
+    }
+  }
+
+  // ---- Polls ----
+
+  const handleCreatePoll = async (ideaId: string, question: string, optionLabels: string[]) => {
+    if (!userId) return
+
+    const newPoll: Poll = {
+      id: crypto.randomUUID(),
+      question,
+      options: optionLabels.map(label => ({
+        id: crypto.randomUUID(),
+        label,
+        votes: [],
+      })),
+      created_by: userId,
+      created_at: new Date().toISOString(),
+    }
+
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const pollsToSave = [...(currentIdea?.polls || []), newPoll]
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, polls: pollsToSave }))
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('content_ideas')
+        .update({ polls: pollsToSave, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+
+      if (error) {
+        console.warn('Polls not persisted (column may not exist):', error.message)
+        setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, polls: (i.polls || []).filter(p => p.id !== newPoll.id) }))
+        setError('Les sondages nécessitent une migration Supabase. Exécute : ALTER TABLE content_ideas ADD COLUMN polls jsonb DEFAULT \'[]\';')
+      }
+    } catch {
+      console.warn('Polls not persisted — column may not exist in Supabase')
+    }
+  }
+
+  const handleVotePoll = async (ideaId: string, pollId: string, optionId: string) => {
+    if (!userId) return
+
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedPolls = (currentIdea?.polls || []).map(p => {
+      if (p.id !== pollId) return p
+      return {
+        ...p,
+        options: p.options.map(o => {
+          if (o.id !== optionId) {
+            // Remove vote from other options
+            return { ...o, votes: (o.votes || []).filter(v => v !== userId) }
+          }
+          // Toggle vote on this option
+          const hasVoted = (o.votes || []).includes(userId)
+          return { ...o, votes: hasVoted ? (o.votes || []).filter(v => v !== userId) : [...(o.votes || []), userId] }
+        }),
+      }
+    })
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, polls: updatedPolls }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ polls: updatedPolls, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Vote not persisted')
+    }
+  }
+
+  const handleDeletePoll = async (ideaId: string, pollId: string) => {
+    const currentIdea = ideas.find(i => i.id === ideaId)
+    const updatedPolls = (currentIdea?.polls || []).filter(p => p.id !== pollId)
+
+    setIdeas(prev => prev.map(i => i.id !== ideaId ? i : { ...i, polls: updatedPolls }))
+
+    try {
+      const supabase = createClient()
+      await supabase
+        .from('content_ideas')
+        .update({ polls: updatedPolls, updated_at: new Date().toISOString() })
+        .eq('id', ideaId)
+    } catch {
+      console.warn('Delete poll not persisted')
+    }
+  }
+
   // ---- Scheduling ----
 
   const handleScheduleDate = async (ideaId: string, date: string | null) => {
@@ -688,6 +853,7 @@ export default function IdeesContenusPage() {
     { key: 'list', label: 'Liste', icon: List },
     { key: 'calendar', label: 'Calendrier', icon: CalendarDays },
     { key: 'dashboard', label: 'Stats', icon: BarChart3 },
+    { key: 'activity', label: 'Activité', icon: Activity },
   ]
 
   return (
@@ -898,13 +1064,22 @@ export default function IdeesContenusPage() {
           onAddComment={handleAddComment}
           onDeleteComment={handleDeleteComment}
           onEditComment={handleEditComment}
+          onAddTakeaway={handleAddTakeaway}
+          onDeleteTakeaway={handleDeleteTakeaway}
+          onEditTakeaway={handleEditTakeaway}
+          onCreatePoll={handleCreatePoll}
+          onVotePoll={handleVotePoll}
+          onDeletePoll={handleDeletePoll}
         />
       )}
 
       {/* ===================== VIEWS ===================== */}
 
       {/* Empty state */}
-      {viewMode === 'dashboard' ? (
+      {viewMode === 'activity' ? (
+        /* ---- ACTIVITY VIEW ---- */
+        <ActivityFeed ideas={ideas} />
+      ) : viewMode === 'dashboard' ? (
         /* ---- DASHBOARD VIEW ---- */
         <Dashboard ideas={ideas} />
       ) : sortedFilteredIdeas.length === 0 && viewMode !== 'calendar' ? (
